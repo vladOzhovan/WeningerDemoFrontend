@@ -1,11 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     paddingHorizontal: 20,
     justifyContent: 'center',
+    alignItems: 'center'
   },
 
   title: {
@@ -38,11 +39,21 @@ export const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: '#007bff',
+    width: '50%',
+    backgroundColor: '#ed6e4e',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
+
+  buttonAdmin: {
+    width: '50%',
+    backgroundColor: '',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+
   buttonText: {
     color: '#fff',
     fontSize: 16,
@@ -54,6 +65,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     marginVertical: 10,
   },
-});
 
-export default styles;
+})
+
+export default styles

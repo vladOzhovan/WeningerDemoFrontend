@@ -1,21 +1,21 @@
-import { useState, useContext } from 'react';
-import { styles } from '../styles';
-import { View, TextInput, Button, Text } from 'react-native';
-import { AuthContext } from '../context/authContext';
+import { useState, useContext } from 'react'
+import { styles } from '../styles'
+import { View, TextInput, Button, Text } from 'react-native'
+import { AuthContext } from '../context/authContext'
 
 export default function LoginScreen({ navigation }) {
-  const { login } = useContext(AuthContext);
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const { login } = useContext(AuthContext)
+  const [userName, setUserName] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const onSubmit = async () => {
     try {
-      await login(userName, password);
+      await login(userName, password)
     } catch {
-      setError('Invalid credentials');
+      setError('Invalid credentials')
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
@@ -25,6 +25,6 @@ export default function LoginScreen({ navigation }) {
       {error && <Text style={styles.error}>{error}</Text>}
       <Button title="Login" onPress={onSubmit}/>
     </View>
-  );
+  )
 }
 

@@ -1,33 +1,33 @@
-import { useState } from 'react';
-import { styles } from '../styles';
-import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
-import { getCustomers } from '../api';
+import { useState } from 'react'
+import { styles } from '../styles'
+import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native'
+import { getCustomers } from '../api'
 
 export default function CustomerScreen({ route, navigation }) {
-  const { userName } = route.params || {};
-  const [customers, setCustomers] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { userName } = route.params || {}
+  const [customers, setCustomers] = useState([])
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const loadCustomers = async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
 
     try {
-      const data = await getCustomers();
-      setCustomers(data);
+      const data = await getCustomers()
+      setCustomers(data)
     } catch (err) {
-      console.error(err);
-      setError('Failed to load customers.');
+      console.error(err)
+      setError('Failed to load customers.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleInfo = (customer) => {
-    console.log('Info about:', customer);
+    console.log('Info about:', customer)
     // Here you can navigate to another screen or show a modal
-  };
+  }
 
   return (
     <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 1 }]}>
@@ -35,7 +35,7 @@ export default function CustomerScreen({ route, navigation }) {
       {/* <Text>{userName ? ` for ${userName}` : ''}</Text> */}
 
       <View style={[styles.buttonWrapper, { marginTop: 1 }]}>
-        <Button title="Load Customers" onPress={loadCustomers} />
+        <Button color='' title="Load Customers" onPress={loadCustomers} />
       </View>
 
       {loading && <Text>Loading...</Text>}
@@ -67,6 +67,6 @@ export default function CustomerScreen({ route, navigation }) {
         <Button title="Back to home" onPress={() => navigation.goBack()} />
       </View>
     </View>
-  );
+  )
 }
 
