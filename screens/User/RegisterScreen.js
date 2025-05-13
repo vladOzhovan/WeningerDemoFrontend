@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { styles } from '../styles'
+import { styles } from '../../styles'
 import { View, TextInput, Button, Text } from 'react-native'
-import { register } from '../api'
+import { register } from '../../api'
 
 export default function RegisterScreen({ navigation }) {
   const [userName, setUserName] = useState('')

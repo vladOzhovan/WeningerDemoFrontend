@@ -38,9 +38,9 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity
             style={[styles.buttonWrapper, styles.button]}
-            onPress={() => navigation.navigate("RegisterUser")}
+            onPress={() => navigation.navigate("Users")}
           >
-            <Text style={styles.buttonText}>Add User</Text>
+            <Text style={styles.buttonText}>Users</Text>
           </TouchableOpacity>
         </>
       )}

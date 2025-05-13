@@ -4,7 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { AuthProvider, AuthContext  } from './context/authContext'
 import { ActivityIndicator, View } from 'react-native'
 import LoginScreen from './screens/LoginScreen'
-import RegisterScreen from './screens/RegisterScreen'
+import UserStack from './Stacks/UserStack'
+//import RegisterScreen from './screens/RegisterScreen'
 import HomeScreen from './screens/HomeScreen'
 import CustomerScreen from './screens/CustomerScreen'
 import OrderScreen from './screens/OrderScreen'
@@ -46,9 +47,9 @@ function AppStack() {
 
       {isAdmin && (
         <Stack.Screen
-          name="RegisterUser"
-          component={RegisterScreen}
-          options={{ title: 'Register User' }}
+          name="Users"
+          component={UserStack}
+          options={{ headerShown: false }}
         />
       )}
 
