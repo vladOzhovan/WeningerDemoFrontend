@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Button, FlatList, ActivityIndicator } from 'react-native'
-import { styles } from '../styles'
-import { getOrdersByCustomer } from '../api'
+import { styles } from '../../styles'
+import { getOrdersByCustomer } from '../../api'
 
 export default function CustomerDetailScreen({ route, navigation }) {
   const { customer } = route.params

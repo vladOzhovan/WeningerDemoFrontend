@@ -15,7 +15,7 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <TouchableOpacity
         style={[styles.buttonWrapper, styles.button]}
-        onPress={() => navigation.navigate("Customers")}
+        onPress={() => navigation.navigate("CustomerStack")}
       >
         <Text style={styles.buttonText}>Customers</Text>
       </TouchableOpacity>
@@ -28,21 +28,12 @@ export default function HomeScreen({ navigation }) {
       </TouchableOpacity>
 
       {isAdmin && (
-        <>
-          <TouchableOpacity
-            style={[styles.buttonWrapper, styles.button]}
-            onPress={() => navigation.navigate("AddCustomer")}
-          >
-            <Text style={styles.buttonText}>Add Customer</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
+         <TouchableOpacity
             style={[styles.buttonWrapper, styles.button]}
             onPress={() => navigation.navigate("Users")}
           >
             <Text style={styles.buttonText}>Users</Text>
           </TouchableOpacity>
-        </>
       )}
 
       <TouchableOpacity

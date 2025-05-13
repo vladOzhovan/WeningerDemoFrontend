@@ -5,13 +5,12 @@ import { AuthProvider, AuthContext  } from './context/authContext'
 import { ActivityIndicator, View } from 'react-native'
 import LoginScreen from './screens/LoginScreen'
 import UserStack from './Stacks/UserStack'
-//import RegisterScreen from './screens/RegisterScreen'
+import CustomerStack from './Stacks/CustomerStack'
 import HomeScreen from './screens/HomeScreen'
-import CustomerScreen from './screens/CustomerScreen'
 import OrderScreen from './screens/OrderScreen'
-import AddCustomerScreen from './screens/AddCustomerScreen'
+import AddCustomerScreen from './screens/Customer/AddCustomerScreen'
+import CustomerDetailScreen from './screens/Customer/CustomerDetailScreen'
 import AddOrderScreen from './screens/AddOrderScreen'
-import CustomerDetailScreen from './screens/CustomerDetailScreen'
 import Toast from 'react-native-toast-message'
 
 const Stack = createNativeStackNavigator()
@@ -42,7 +41,7 @@ function AppStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Customers" component={CustomerScreen} />
+      <Stack.Screen name="CustomerStack" component={CustomerStack} options={{ headerShown: false }} />
       <Stack.Screen name="Orders" component={OrderScreen} />
 
       {isAdmin && (

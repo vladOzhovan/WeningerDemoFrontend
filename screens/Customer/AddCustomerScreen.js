@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react'
 import { View, TextInput, Button, Text } from 'react-native'
-import { styles } from '../styles'
-import { createCustomer } from '../api'
+import { styles } from '../../styles'
+import { createCustomer } from '../../api'
 import Toast from 'react-native-toast-message'
 
 export default function AddCustomerScreen({ navigation }) {

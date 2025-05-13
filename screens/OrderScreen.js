@@ -138,7 +138,7 @@ export default function OrderScreen({ navigation }) {
         )}
       />
 
-      <Button title="Back to Home" onPress={() => navigation.goBack()} />
+      {/* <Button title="Back to Home" onPress={() => navigation.goBack()} /> */}
     </View>
   )
 }
