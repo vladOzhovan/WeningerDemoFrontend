@@ -12,7 +12,6 @@ export default function UserStack() {
       initialRouteName="UsersHome"
       screenOptions={{ headerTitleAlign: "center" }}
     >
-
       <Stack.Screen
         name="UsersHome"
         component={UserScreen}
@@ -25,7 +24,7 @@ export default function UserStack() {
         options={{ title: 'Register new User' }}
       />
 
-      {/* <Stack.Screen
+      <Stack.Screen
         name="UserList"
         component={UserListScreen}
         options={{ title: 'All Users' }}
@@ -35,7 +34,7 @@ export default function UserStack() {
         name="EditUser"
         component={EditUserScreen}
         options={{ title: 'Edit User' }}
-      /> */}
+      />
     </Stack.Navigator>
-  );
+  )
 }

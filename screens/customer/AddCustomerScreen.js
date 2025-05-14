@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState} from 'react'
 import { View, TextInput, Button, Text } from 'react-native'
 import { styles } from '../../styles'
 import { createCustomer } from '../../api'

@@ -1,8 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import CustomerScreen from '../screens/Customer/CustomerScreen'
-import AddCustomerScreen from '../screens/Customer/AddCustomerScreen'
-import CustomerListScreen from '../screens/Customer/CustomerListScreen'
-import CustomerDetailScreen from '../screens/Customer/CustomerDetailScreen'
+import CustomerScreen from '../screens/customer/CustomerScreen'
+import AddCustomerScreen from '../screens/customer/AddCustomerScreen'
+import CustomerListScreen from '../screens/customer/CustomerListScreen'
+import CustomerDetailScreen from '../screens/сustomer/CustomerDetailScreen'
 
 const Stack = createNativeStackNavigator()
 

@@ -18,5 +18,5 @@ export default function UserScreen({ navigation }) {
         <Text style={styles.buttonText}>User List</Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
