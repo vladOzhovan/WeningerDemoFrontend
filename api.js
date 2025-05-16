@@ -43,6 +43,21 @@ export const getUsers = async () => {
   }
 }
 
+export const createCustomer = async ({ customerNumber, firstName, secondName }) => {
+  const response = await api.post('/api/customer', { customerNumber, firstName, secondName })
+  return response.data
+}
+
+export const deleteCustomer = async (id) => {
+  const response = await api.delete(`/api/customer/${id}`)  
+  return response.data
+}
+
+export const generateCustomers = async (count = 10) => {
+  const response = await api.post(`/api/customer/generate-customers?count=${count}`)
+  return response.data
+}
+
 export const getCustomers = async () => {
   try {
     const response = await api.get(`/api/customer`)
@@ -93,18 +108,13 @@ export const completeOrder = async (orderId) => {
   }
 }
 
-export const createCustomer = async ({ customerNumber, firstName, secondName }) => {
-  const response = await api.post('/api/customer', { customerNumber, firstName, secondName })
-  return response.data;
-};
-
 export const createOrder = async (customerNumber, orderDto) => {
   const response = await api.post(
     `/api/order/by-number/${customerNumber}`,
     orderDto
-  );
-  return response.data;
-};
+  )
+  return response.data
+}
 
 export const getOrdersByCustomer = async (customerNumber) => {
   try {
@@ -114,7 +124,7 @@ export const getOrdersByCustomer = async (customerNumber) => {
     console.error(`Error fetching orders for customer ${customerNumber}:`, error)
     throw error
   }
-};
+}
 
 export const register = async (userName, email, password) => {
   try {

@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState, useLayoutEffect, useEffect } from "react"
 import { styles } from "../styles"
-import { View, Text, Button, FlatList, TouchableOpacity, ActivityIndicator } from "react-native"
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react-native"
 import { getOrders, takeOrder, releaseOrder, completeOrder } from "../api"
 import Toast from 'react-native-toast-message'
 
@@ -23,9 +23,24 @@ export default function OrderScreen({ navigation }) {
     }
   }
 
+  // Auto-load when screen mounts
+  useEffect(() => {
+    loadOrders()
+  }, [])
+
+  // Add refresh button in header
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={loadOrders} style={{ marginRight: 15 }}>
+          <Text style={{ color: "blue" }}>Reload</Text>
+        </TouchableOpacity>
+      ),
+    })
+  }, [navigation])
+
   const handleInfo = (order) => {
     console.log("Info about order:", order)
-    // Navigation to detailed order screen (if needed)
   }
 
   const handleTakeOrder = async (orderId) => {
@@ -88,10 +103,6 @@ export default function OrderScreen({ navigation }) {
   return (
     <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 1 }]}>
       <Text style={styles.title}>Orders</Text>
-      
-      <View style={[styles.buttonWrapper, { marginTop: 1 }]}>
-        <Button title="Load Orders" onPress={loadOrders} />
-      </View>
 
       {loading && <ActivityIndicator style={{ margin: 10 }} />}
       {error && <Text style={{ color: "red", margin: 10 }}>{error}</Text>}
@@ -137,8 +148,6 @@ export default function OrderScreen({ navigation }) {
           </View>
         )}
       />
-
-      {/* <Button title="Back to Home" onPress={() => navigation.goBack()} /> */}
     </View>
   )
 }
