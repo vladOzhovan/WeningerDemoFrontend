@@ -53,6 +53,11 @@ export const deleteCustomer = async (id) => {
   return response.data
 }
 
+export const deleteMultipleCustomers = async ids => {
+  const response = await api.post('/api/customer/delete-multiple', ids)
+  return response.data
+}
+
 export const generateCustomers = async (count = 10) => {
   const response = await api.post(`/api/customer/generate-customers?count=${count}`)
   return response.data

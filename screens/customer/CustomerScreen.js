@@ -1,87 +1,147 @@
-import { useState, useEffect, useContext } from "react";
-import { styles } from "../../styles";
-import { View, Text, TextInput, Modal, FlatList,TouchableOpacity, Button} from "react-native";
-import { AuthContext } from "../../context/authContext";
-import { getCustomers, generateCustomers } from "../../api";
-import Toast from "react-native-toast-message"
+import { useState, useEffect, useContext } from 'react'
+import { styles } from '../../styles'
+import { View, Text, TextInput, Modal, FlatList, TouchableOpacity, Button, Alert } from 'react-native'
+import { AuthContext } from '../../context/authContext'
+import { getCustomers, generateCustomers, deleteMultipleCustomers } from '../../api'
+import Toast from 'react-native-toast-message'
 
 export default function CustomerScreen({ navigation }) {
-  const { isAdmin } = useContext(AuthContext);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [customerCount, setCustomerCount] = useState("10");
-  const [customers, setCustomers] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { isAdmin } = useContext(AuthContext)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [customerCount, setCustomerCount] = useState('10')
+  const [customers, setCustomers] = useState([])
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [selectedIds, setSelectedIds] = useState([])
+  const [selectionMode, setSelectionMode] = useState(false)
 
-  // Function for loading clients
   const loadCustomers = async () => {
-    setLoading(true);
-    setError(null);
-
+    setLoading(true)
+    setError(null)
     try {
-      const data = await getCustomers();
-      setCustomers(data);
+      const data = await getCustomers()
+      setCustomers(data)
     } catch (err) {
-      console.error(err);
-      setError("Failed to load customers.");
+      console.error(err)
+      setError('Failed to load customers.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    loadCustomers();
-  }, []);
+    loadCustomers()
+  }, [])
 
-  // Function for handling client click
-  const handleInfo = (customer) => {
-    navigation.navigate("CustomerDetail", { customer });
-  };
+  useEffect(() => {
+    if (selectedIds.length === 0) {
+      setSelectionMode(false)
+    }
+  }, [selectedIds])
+
+  const toggleSelection = id => {
+    setSelectedIds(prev => (prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]))
+  }
+
+  const handlePress = customer => {
+    if (selectionMode) {
+      toggleSelection(customer.id)
+    } else {
+      navigation.navigate('CustomerDetail', { customer })
+    }
+  }
+
+  const handleLongPress = customer => {
+    if (!selectionMode) {
+      setSelectionMode(true)
+    }
+    toggleSelection(customer.id)
+  }
 
   return (
     <View style={styles.container}>
       {isAdmin && (
         <>
-          <TouchableOpacity
-            style={[styles.buttonWrapper, styles.button]}
-            onPress={() => navigation.navigate("AddCustomer")}
-          >
-            <Text style={styles.buttonText}>Add Customer</Text>
-          </TouchableOpacity>
+          {/* Row 1: Add + Generate */}
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+            <TouchableOpacity
+              style={[styles.button, { flex: 1, paddingVertical: 8 }]}
+              onPress={() => navigation.navigate('AddCustomer')}
+            >
+              <Text style={styles.buttonText}>Add Customer</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.buttonWrapper,
-              styles.button,
-              { backgroundColor: "#6c5ce7" },
-            ]}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={styles.buttonText}>Generate Customers</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, { flex: 1, backgroundColor: '#6c5ce7', paddingVertical: 8 }]}
+              onPress={() => setModalVisible(true)}
+            >
+              <Text style={styles.buttonText}>Generate Customers</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Row 2: Selection Controls */}
+          {selectionMode && (
+            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+              <TouchableOpacity
+                style={[styles.button, { flex: 1, backgroundColor: '#b2bec3', paddingVertical: 8 }]}
+                onPress={() => {
+                  setSelectedIds([])
+                  setSelectionMode(false)
+                }}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, { flex: 1, backgroundColor: '#0984e3', paddingVertical: 8 }]}
+                onPress={() => {
+                  setSelectedIds(customers.map(c => c.id))
+                }}
+              >
+                <Text style={styles.buttonText}>Select All</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, { flex: 1, backgroundColor: '#d63031', paddingVertical: 8 }]}
+                onPress={() => {
+                  Alert.alert('Confirm', `Delete ${selectedIds.length} customers?`, [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Delete',
+                      style: 'destructive',
+                      onPress: async () => {
+                        try {
+                          await deleteMultipleCustomers(selectedIds)
+                          Toast.show({ type: 'success', text1: 'Customers deleted' })
+                          setSelectedIds([])
+                          setSelectionMode(false)
+                          loadCustomers()
+                        } catch (e) {
+                          console.error(e)
+                          Toast.show({
+                            type: 'error',
+                            text1: 'Error deleting customers',
+                            text2: e.message
+                          })
+                        }
+                      }
+                    }
+                  ])
+                }}
+              >
+                <Text style={styles.buttonText}>Delete ({selectedIds.length})</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </>
       )}
 
       <Modal visible={modalVisible} transparent animationType="slide">
         <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         >
-          <View
-            style={{
-              backgroundColor: "white",
-              padding: 20,
-              borderRadius: 10,
-              width: 300,
-            }}
-          >
-            <Text style={{ marginBottom: 10 }}>
-              How many customers to generate?
-            </Text>
+          <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: 300 }}>
+            <Text style={{ marginBottom: 10 }}>How many customers to generate?</Text>
             <TextInput
               keyboardType="numeric"
               value={customerCount}
@@ -92,58 +152,50 @@ export default function CustomerScreen({ navigation }) {
               title="Generate"
               onPress={async () => {
                 try {
-                  const count = parseInt(customerCount);
+                  const count = parseInt(customerCount)
                   if (isNaN(count) || count <= 0) {
-                    Toast.show({
-                      type: "error",
-                      text1: "Enter a valid number",
-                    });
-                    return;
+                    Toast.show({ type: 'error', text1: 'Enter a valid number' })
+                    return
                   }
-                  await generateCustomers(count);
-                  Toast.show({
-                    type: "success",
-                    text1: `Generated ${count} customers`,
-                  });
-                  setModalVisible(false);
-                  loadCustomers();
+                  await generateCustomers(count)
+                  Toast.show({ type: 'success', text1: `Generated ${count} customers` })
+                  setModalVisible(false)
+                  loadCustomers()
                 } catch (e) {
-                  console.error(e);
-                  Toast.show({
-                    type: "error",
-                    text1: "Error",
-                    text2: e.message,
-                  });
+                  console.error(e)
+                  Toast.show({ type: 'error', text1: 'Error', text2: e.message })
                 }
               }}
             />
-            <Button
-              title="Cancel"
-              color="gray"
-              onPress={() => setModalVisible(false)}
-            />
+            <Button title="Cancel" color="gray" onPress={() => setModalVisible(false)} />
           </View>
         </View>
       </Modal>
 
       {loading && <Text>Loading...</Text>}
-      {error && <Text style={{ color: "red" }}>{error}</Text>}
+      {error && <Text style={{ color: 'red' }}>{error}</Text>}
 
       <FlatList
         data={customers}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={{ padding: 10, borderBottomWidth: 1 }}
-            onPress={() => handleInfo(item)}
+            style={{
+              padding: 10,
+              borderBottomWidth: 1,
+              backgroundColor: selectedIds.includes(item.id) ? '#ffeaa7' : 'white'
+            }}
+            onPress={() => handlePress(item)}
+            onLongPress={() => handleLongPress(item)}
           >
             <Text>
-              {item.customerNumber} - {item.firstName} {item.secondName} (
-              {item.overallStatus})
+              {item.customerNumber} - {item.firstName} {item.secondName} ({item.overallStatus})
             </Text>
           </TouchableOpacity>
         )}
+        ListFooterComponent={<View style={{ height: 80 }} />} // 👈 Добавь отступ
       />
     </View>
-  );
+  )
 }
+

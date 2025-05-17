@@ -1,14 +1,14 @@
-import { useContext } from "react";
-import { styles } from "../styles";
-import { View, Text, TouchableOpacity } from "react-native";
-import { AuthContext } from "../context/authContext";
+import { useContext } from "react"
+import { styles } from "../styles"
+import { View, Text, TouchableOpacity } from "react-native"
+import { AuthContext } from "../context/authContext"
 
 export default function HomeScreen({ navigation }) {
-  const { isAuthenticated, isAdmin, logout } = useContext(AuthContext);
+  const { isAuthenticated, isAdmin, logout } = useContext(AuthContext)
 
   if (!isAuthenticated) {
-    navigation.replace("Login");
-    return null;
+    navigation.replace("Login")
+    return null
   }
 
   return (
@@ -43,5 +43,5 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
