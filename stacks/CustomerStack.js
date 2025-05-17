@@ -14,11 +14,6 @@ export default function CustomerStack() {
         component={CustomerScreen}
         options={{ title: 'Customers' }}
       />
-      {/* <Stack.Screen
-        name="CustomerList"
-        component={CustomerListScreen}
-        options={{ title: 'Customer List' }}
-      /> */}
       <Stack.Screen
         name="AddCustomer"
         component={AddCustomerScreen}
@@ -34,3 +29,4 @@ export default function CustomerStack() {
     </Stack.Navigator>
   )
 }
+

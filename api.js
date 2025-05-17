@@ -83,6 +83,16 @@ export const getOrders = async () => {
   }
 }
 
+export const getOrdersByCustomer = async customerNumber => {
+  try {
+    const response = await api.get(`/api/order/by-customer/${customerNumber}`)
+    return response.data
+  } catch (error) {
+    console.error(`Error fetching orders for customer ${customerNumber}:`, error)
+    throw error
+  }
+}
+
 export const takeOrder = async (orderId) => {
   try {
     const response = await api.put(`/api/order/take/${orderId}`)
@@ -121,14 +131,16 @@ export const createOrder = async (customerNumber, orderDto) => {
   return response.data
 }
 
-export const getOrdersByCustomer = async (customerNumber) => {
-  try {
-    const response = await api.get(`/api/order/by-customer/${customerNumber}`)
-    return response.data
-  } catch (error) {
-    console.error(`Error fetching orders for customer ${customerNumber}:`, error)
-    throw error
-  }
+export const deleteOrders = async ids => {
+  const response = await fetch(`${API_URL}/orders/delete-multiple`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${yourAuthToken}`
+    },
+    body: JSON.stringify(ids)
+  })
+  if (!response.ok) throw new Error('Failed to delete orders')
 }
 
 export const register = async (userName, email, password) => {
