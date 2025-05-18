@@ -6,8 +6,9 @@ export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isAdmin,         setIsAdmin]         = useState(false)
-  const [user,            setUser]            = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [user, setUser] = useState(null)
+  const [isWorker, setIsWorker] = useState(false)
 
   useEffect(() => {
     (async () => {
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }) => {
         setUser(profile)
         setIsAuthenticated(true)
         setIsAdmin(Array.isArray(profile.roles) && profile.roles.includes('Admin'))
+        setIsWorker(Array.isArray(profile.roles) && profile.roles.includes('User'))
       } catch {
         await AsyncStorage.removeItem('token')
       }
@@ -33,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     setUser({ userName: data.userName, email: data.email, roles: data.roles })
     setIsAuthenticated(true)
     setIsAdmin(Array.isArray(data.roles) && data.roles.includes('Admin'))
+    setIsWorker(Array.isArray(data.roles) && data.roles.includes('User'))
     console.log('ROLES:', data.roles)
   }
 
@@ -44,9 +47,18 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isAdmin, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        isAdmin,
+        isWorker, // ← эта строка должна быть здесь
+        user,
+        login,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
-  )
+  )  
 }
 

@@ -103,6 +103,16 @@ export const getOrderById = async (id) => {
   }
 }
 
+export const getUserOrderList = async () => {
+  try {
+    const response = await api.get(`/api/order/user-order-list`)
+    return response.data
+  } catch (error) {
+    console.error(`Error fetching orders`, error)
+    throw error
+  }
+}
+
 export const takeOrder = async (orderId) => {
   try {
     const response = await api.put(`/api/order/take/${orderId}`)

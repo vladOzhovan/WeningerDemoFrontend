@@ -1,5 +1,5 @@
 import { View, Text, Button, Alert, TouchableOpacity } from 'react-native'
-import { deleteOrder, getOrderById, updateOrderStatus } from '../../api'
+import { deleteOrder, takeOrder, releaseOrder, completeOrder, getOrderById, updateOrderStatus } from '../../api'
 import { styles } from '../../styles'
 import { formatDate } from '../../utils/dateUtils'
 import { useContext, useState, useCallback } from 'react'
@@ -11,9 +11,9 @@ const STATUSES = ['Pending', 'InProgress', 'Completed', 'Canceled']
 
 export default function OrderDetailScreen({ route, navigation }) {
   const { order: initialOrder } = route.params
-  const { isAdmin } = useContext(AuthContext)
-  const [ order, setOrder ] = useState(initialOrder)
-  const [ loading, setLoading ] = useState(false)
+  const { isAdmin, isWorker } = useContext(AuthContext)
+  const [order, setOrder] = useState(initialOrder)
+  const [loading, setLoading] = useState(false)
   const formattedDate = formatDate(order.createdOn)
 
   const fetchOrder = async () => {
@@ -87,6 +87,40 @@ export default function OrderDetailScreen({ route, navigation }) {
     )
   }
 
+  // Worker actions
+  const handleTakeOrder = async () => {
+    try {
+      await takeOrder(order.id)
+      await fetchOrder()
+      Toast.show({ type: 'success', text1: `Order #${order.id} taken` })
+    } catch (e) {
+      console.error(e)
+      Toast.show({ type: 'error', text1: 'Take failed' })
+    }
+  }
+
+  const handleReleaseOrder = async () => {
+    try {
+      await releaseOrder(order.id)
+      await fetchOrder()
+      Toast.show({ type: 'info', text1: `Order #${order.id} released` })
+    } catch (e) {
+      console.error(e)
+      Toast.show({ type: 'error', text1: 'Release failed' })
+    }
+  }
+
+  const handleCompleteOrder = async () => {
+    try {
+      await completeOrder(order.id)
+      await fetchOrder()
+      Toast.show({ type: 'success', text1: `Order #${order.id} completed` })
+    } catch (e) {
+      console.error(e)
+      Toast.show({ type: 'error', text1: 'Complete failed' })
+    }
+  }
+
   return (
     <View style={styles.detailContainer}>
       <View style={styles.detailContent}>
@@ -108,8 +142,26 @@ export default function OrderDetailScreen({ route, navigation }) {
         </View>
       </View>
 
+      {isWorker && (
+        <View style={[styles.footerButtons, { marginBottom: 16 }]}>
+          {order.isTaken ? (
+            <>
+              <Button title="Release" color="#d63031" onPress={handleReleaseOrder} />
+              <Button title="Complete" color="#0984e3" onPress={handleCompleteOrder} />
+            </>
+          ) : (
+            <Button title="Take" color="#00b894" onPress={handleTakeOrder} />
+          )}
+        </View>
+      )}
+
       <View style={styles.footerButtons}>
-        {isAdmin && <Button title="Edit Order" onPress={() => navigation.navigate('EditOrder', { order })} />}
+        {isAdmin && (
+          <Button
+            title="Edit Order"
+            onPress={() => navigation.navigate('EditOrder', { order })}
+          />
+        )}
         <Button title="Delete Order" color="red" onPress={handleDelete} />
       </View>
     </View>

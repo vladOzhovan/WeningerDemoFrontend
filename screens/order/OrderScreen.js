@@ -1,7 +1,7 @@
 import { useState, useLayoutEffect, useEffect, useRef, useContext } from 'react'
 import { styles } from '../../styles'
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
-import { getOrders, takeOrder, releaseOrder, completeOrder, deleteOrders } from '../../api'
+import { getOrders, takeOrder, releaseOrder, completeOrder, deleteOrders, getUserOrderList } from '../../api'
 import { AuthContext } from '../../context/authContext'
 import { formatDate } from '../../utils/dateUtils'
 import Toast from 'react-native-toast-message'
@@ -11,17 +11,23 @@ export default function OrderScreen({ navigation }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [selectedOrders, setSelectedOrders] = useState([])
-  const { isAdmin } = useContext(AuthContext)
   const [filter, setFilter] = useState('Active')
-  const filters = ['Active', 'Completed', 'Canceled', 'All']
+  const { isAdmin, isWorker } = useContext(AuthContext)
   const selectionMode = selectedOrders.length > 0
   const flatListRef = useRef(null)
+
+  const filters = isWorker 
+    ? ['MyOrders', 'Active', 'Completed', 'Canceled'] 
+    : ['Active', 'Completed', 'Canceled', 'All']
 
   const loadOrders = async () => {
     setLoading(true)
     setError(null)
     try {
-      const data = await getOrders()
+      const data = filter === 'MyOrders' && isWorker 
+        ? await getUserOrderList()
+        : await getOrders()
+
       let filtered = []
 
       switch (filter) {
@@ -210,6 +216,7 @@ export default function OrderScreen({ navigation }) {
             <Text style={{ color: filter === f ? 'white' : 'black' }}>
               {
                 {
+                  MyOrders: 'My Orders',
                   Active: 'Pending/In Progress',
                   Completed: 'Completed',
                   Canceled: 'Canceled',
@@ -257,9 +264,11 @@ export default function OrderScreen({ navigation }) {
                   </TouchableOpacity>
                 </>
               ) : (
-                <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
-                  <Text style={{ color: 'green' }}>Take</Text>
-                </TouchableOpacity>
+                isWorker && (
+                  <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
+                    <Text style={{ color: 'green' }}>Take</Text>
+                  </TouchableOpacity>
+                )
               )}
             </View>
           </TouchableOpacity>
