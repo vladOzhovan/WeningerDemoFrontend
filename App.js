@@ -1,16 +1,18 @@
 import { useContext } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { AuthProvider, AuthContext  } from './context/authContext'
+import { AuthProvider, AuthContext } from './context/authContext'
 import { ActivityIndicator, View } from 'react-native'
 import LoginScreen from './screens/LoginScreen'
 import UserStack from './stacks/UserStack'
 import CustomerStack from './stacks/CustomerStack'
 import HomeScreen from './screens/HomeScreen'
-import OrderScreen from './screens/OrderScreen'
+import OrderScreen from './screens/order/OrderScreen'
+import OrderDetailScreen from './screens/order/OrderDtailScreen'
 import AddCustomerScreen from './screens/customer/AddCustomerScreen'
+import AddOrderScreen from './screens/order/AddOrderScreen'
 import CustomerDetailScreen from './screens/customer/CustomerDetailScreen'
-import AddOrderScreen from './screens/AddOrderScreen'
+import EditOrderScreen from './screens/order/EditOrderScreen'
 import Toast from 'react-native-toast-message'
 
 const Stack = createNativeStackNavigator()
@@ -26,7 +28,7 @@ function LoaderScreen() {
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen}/>
+      <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>
   )
 }
@@ -41,8 +43,28 @@ function AppStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="CustomerStack" component={CustomerStack} options={{ headerShown: false }} />
+
+      <Stack.Screen
+        name="CustomerStack"
+        component={CustomerStack}
+        options={{ headerShown: false }}
+      />
+
       <Stack.Screen name="Orders" component={OrderScreen} />
+
+      <Stack.Screen
+        name="OrderDetail"
+        component={OrderDetailScreen}
+        options={{ title: 'Order Details' }}
+      />
+
+      {isAdmin && (
+        <Stack.Screen
+          name="AddOrder"
+          component={AddOrderScreen}
+          options={{ title: 'New Order' }}
+        />
+      )}
 
       {isAdmin && (
         <Stack.Screen
@@ -53,50 +75,45 @@ function AppStack() {
       )}
 
       {isAdmin && (
-        <Stack.Screen
-          name="AddCustomer"
-          component={AddCustomerScreen}
-          options={{ title: 'Add Customer' }}
+        <Stack.Screen 
+          name="EditOrder" 
+          component={EditOrderScreen} 
         />
       )}
 
       {isAdmin && (
-        <Stack.Screen
-          name="CustomerDetail"
-          component={CustomerDetailScreen}
-          options={({ route }) => ({
-            title: `Customer #${route.params.customer.customerNumber}`,
-          })}
-        />
-      )}
-
-      {isAdmin && (
-        <Stack.Screen
-          name="AddOrder"
-          component={AddOrderScreen}
-          options={{ title: 'New Order' }}
-        />
+        <>
+          <Stack.Screen
+            name="AddCustomer"
+            component={AddCustomerScreen}
+            options={{ title: 'Add Customer' }}
+          />
+          <Stack.Screen
+            name="CustomerDetail"
+            component={CustomerDetailScreen}
+            options={({ route }) => ({
+              title: `Customer #${route.params.customer.customerNumber}`,
+            })}
+          />
+        </>
       )}
     </Stack.Navigator>
-  )
-}
-
-function RootNavigation() {
-  const { isAuthenticated } = useContext(AuthContext)
-
-  return (
-    <NavigationContainer>
-      {isAuthenticated ? <AppStack /> : <AuthStack />}
-    </NavigationContainer>
   )
 }
 
 export default function App() {
   return (
     <AuthProvider>
-      <RootNavigation/>
-      <Toast/>
+      <NavigationContainer>
+        <Root />
+      </NavigationContainer>
+      <Toast />
     </AuthProvider>
   )
 }
 
+function Root() {
+  const { isAuthenticated } = useContext(AuthContext)
+
+  return isAuthenticated ? <AppStack /> : <AuthStack />
+}

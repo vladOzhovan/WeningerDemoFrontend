@@ -1,8 +1,9 @@
 import { useState, useLayoutEffect, useEffect, useRef, useContext } from 'react'
-import { styles } from "../styles"
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react-native"
-import { getOrders, takeOrder, releaseOrder, completeOrder, deleteOrders } from '../api'
-import { AuthContext } from '../context/authContext'
+import { styles } from '../../styles'
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { getOrders, takeOrder, releaseOrder, completeOrder, deleteOrders } from '../../api'
+import { AuthContext } from '../../context/authContext'
+import { formatDate } from '../../utils/dateUtils'
 import Toast from 'react-native-toast-message'
 
 export default function OrderScreen({ navigation }) {
@@ -10,19 +11,39 @@ export default function OrderScreen({ navigation }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [selectedOrders, setSelectedOrders] = useState([])
+  const { isAdmin } = useContext(AuthContext)
+  const [filter, setFilter] = useState('Active')
+  const filters = ['Active', 'Completed', 'Canceled', 'All']
   const selectionMode = selectedOrders.length > 0
   const flatListRef = useRef(null)
-  const { isAdmin } = useContext(AuthContext)
 
   const loadOrders = async () => {
     setLoading(true)
     setError(null)
     try {
       const data = await getOrders()
-      setOrders(data)
+      let filtered = []
+
+      switch (filter) {
+        case 'Active':
+          filtered = data.filter(order => order.status === 'Pending' || order.status === 'InProgress')
+          break
+        case 'Completed':
+          filtered = data.filter(order => order.status === 'Completed')
+          break
+        case 'Canceled':
+          filtered = data.filter(order => order.status === 'Canceled')
+          break
+        case 'All':
+        default:
+          filtered = data
+          break
+      }
+
+      setOrders(filtered)
     } catch (err) {
       console.error(err)
-      setError("Failed to load orders.")
+      setError('Failed to load orders.')
     } finally {
       setLoading(false)
     }
@@ -30,85 +51,101 @@ export default function OrderScreen({ navigation }) {
 
   const toggleSelect = id => {
     setSelectedOrders(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]))
-  }  
+  }
 
-  // Auto-load when screen mounts
-  useEffect(() => {
-    loadOrders()
-  }, [])
+  // Single-tap handler: navigate or select
+  const handlePress = order => {
+    if (selectionMode) {
+      toggleSelect(order.id)
+    } else {
+      navigation.navigate('OrderDetail', { order })
+    }
+  }
 
-  // Add refresh button in header
+  // Long-tap starts multi-select
+  const handleLongPress = order => {
+    if (!selectionMode) {
+      setSelectedOrders([order.id])
+    } else {
+      toggleSelect(order.id)
+    }
+  }
+
+  // Header "Reload" button
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={loadOrders} style={{ marginRight: 15 }}>
-          <Text style={{ color: "blue" }}>Reload</Text>
+          <Text style={{ color: 'blue' }}>Reload</Text>
         </TouchableOpacity>
-      ),
+      )
     })
-  }, [navigation])
+  }, [navigation, loadOrders])
 
-  const handleInfo = (order) => {
-    console.log("Info about order:", order)
-  }
+  // Initial load
+  useEffect(() => {
+    loadOrders()
+  }, [filter])
 
-  const handleTakeOrder = async (orderId) => {
+  // Handlers for take/release/complete
+  const handleTakeOrder = async id => {
     try {
-      await takeOrder(orderId)
+      await takeOrder(id)
       await loadOrders()
       Toast.show({
         type: 'success',
-        text1: 'Order taken',
-        text2: `Order ${orderId} has been assigned to you.`,
+        text1: 'Taken',
+        text2: `Order #${id} taken.`
       })
     } catch (err) {
       console.error(err)
       Toast.show({
         type: 'error',
-        text1: 'Fail',
-        text2: 'There was an error when trying to assign the order.',
+        text1: 'Take failed',
+        text2: `Failed to take order #${id}.`
       })
     }
   }
 
-  const handleReleaseOrder = async (orderId) => {
+  const handleReleaseOrder = async id => {
     try {
-      await releaseOrder(orderId)
+      await releaseOrder(id)
       await loadOrders()
       Toast.show({
-        type: 'success',
-        text1: 'Order released',
-        text2: `Order ${orderId} has been released.`,
+        type: 'info',
+        text1: 'Released',
+        text2: `Order #${id} released.`
       })
     } catch (err) {
       console.error(err)
       Toast.show({
         type: 'error',
-        text1: 'Fail',
-        text2: 'There was an error when trying to release the order.',
+        text1: 'Release failed',
+        text2: `Failed to release order #${id}.`
       })
     }
   }
 
-  const handleCompleteOrder = async (orderId) => {
+  const handleCompleteOrder = async id => {
     try {
-      await completeOrder(orderId)
+      await completeOrder(id)
       await loadOrders()
       Toast.show({
         type: 'success',
-        text1: 'Order completed',
-        text2: `Order ${orderId} has been completed.`,
+        text1: 'Completed',
+        text2: `Order #${id} completed.`
       })
     } catch (err) {
       console.error(err)
       Toast.show({
         type: 'error',
-        text1: 'Fail',
-        text2: 'There was an error when trying to complete the order.',
+        text1: 'Complete failed',
+        text2: `Failed to complete order #${id}.`
       })
     }
   }
 
+  // Delete selected
   const handleDeleteSelected = async () => {
     if (selectedOrders.length === 0) return
     try {
@@ -116,7 +153,6 @@ export default function OrderScreen({ navigation }) {
       setSelectedOrders([])
       await loadOrders()
       flatListRef.current?.scrollToOffset({ offset: 0, animated: false })
-
       Toast.show({
         type: 'success',
         text1: 'Deleted',
@@ -132,11 +168,8 @@ export default function OrderScreen({ navigation }) {
     }
   }
 
-
   return (
     <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 1 }]}>
-      <Text style={styles.title}>Orders</Text>
-
       {isAdmin && selectionMode && (
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
           <TouchableOpacity
@@ -162,6 +195,32 @@ export default function OrderScreen({ navigation }) {
         </View>
       )}
 
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
+        {filters.map(f => (
+          <TouchableOpacity
+            key={f}
+            onPress={() => setFilter(f)}
+            style={{
+              paddingVertical: 6,
+              paddingHorizontal: 12,
+              backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
+              borderRadius: 6
+            }}
+          >
+            <Text style={{ color: filter === f ? 'white' : 'black' }}>
+              {
+                {
+                  Active: 'Pending/In Progress',
+                  Completed: 'Completed',
+                  Canceled: 'Canceled',
+                  All: 'All'
+                }[f]
+              }
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       {loading && <ActivityIndicator style={{ margin: 10 }} />}
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
 
@@ -172,7 +231,8 @@ export default function OrderScreen({ navigation }) {
         contentContainerStyle={{ paddingVertical: 10 }}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => toggleSelect(item.id)}
+            onPress={() => handlePress(item)}
+            onLongPress={() => handleLongPress(item)}
             style={{
               marginBottom: 8,
               padding: 12,
@@ -183,14 +243,10 @@ export default function OrderScreen({ navigation }) {
             }}
           >
             <Text>Order #{item.id}</Text>
-            <Text>Date: {new Date(item.date).toLocaleDateString()}</Text>
+            <Text>Date: {formatDate(item.createdOn)}</Text>
             <Text>Total: ${item.total}</Text>
 
             <View style={{ flexDirection: 'row', marginTop: 6 }}>
-              <TouchableOpacity onPress={() => handleInfo(item)} style={{ marginRight: 15 }}>
-                <Text style={{ color: 'blue' }}>Info</Text>
-              </TouchableOpacity>
-
               {item.isTaken ? (
                 <>
                   <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>

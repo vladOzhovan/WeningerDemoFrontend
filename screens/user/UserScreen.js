@@ -1,45 +1,45 @@
-import { useState, useEffect, useContext } from "react";
-import { styles } from "../../styles";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
-import { AuthContext } from "../../context/authContext";
-import { getUsers } from "../../api";
+import { useState, useEffect, useContext } from "react"
+import { styles } from "../../styles"
+import { View, Text, FlatList, TouchableOpacity } from "react-native"
+import { AuthContext } from "../../context/authContext"
+import { getUsers } from "../../api"
 
 export default function UserScreen({ navigation }) {
-  const { isAdmin } = useContext(AuthContext);
-  const [users, setUsers] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { isAdmin } = useContext(AuthContext)
+  const [users, setUsers] = useState([])
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   // Function for loading the user list
   const loadUsers = async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
 
     try {
-      const data = await getUsers();
-      setUsers(data);
+      const data = await getUsers()
+      setUsers(data)
     } catch (err) {
-      console.error(err);
-      setError("Failed to load users.");
+      console.error(err)
+      setError("Failed to load users.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+    loadUsers()
+  }, [])
 
   // A function to handle the user click
   const handleUserPress = (user) => {
-    navigation.navigate("EditUser", { user });
-  };
+    navigation.navigate("EditUser", { user })
+  }
 
   return (
     <View style={styles.container}>
       {isAdmin && (
         <TouchableOpacity
-          style={[styles.buttonWrapper, styles.button]}
+          style={[styles.addUserButton]}
           onPress={() => navigation.navigate("RegisterUser")}
         >
           <Text style={styles.buttonText}>Add User</Text>
@@ -54,14 +54,14 @@ export default function UserScreen({ navigation }) {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={{ padding: 10, borderBottomWidth: 1 }}
+            style={{ padding: 15, borderBottomWidth: 1 }}
             onPress={() => handleUserPress(item)}
           >
-            <Text>{item.username} ({item.email})</Text>
+            <Text style={{ alignContent: 'center', fontSize: 16}}>{item.userName} ({item.email})</Text>
           </TouchableOpacity>
         )}
       />
     </View>
-  );
+  )
 }
 

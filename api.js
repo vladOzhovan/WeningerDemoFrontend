@@ -48,6 +48,11 @@ export const createCustomer = async ({ customerNumber, firstName, secondName }) 
   return response.data
 }
 
+export const generateCustomers = async (count = 10) => {
+  const response = await api.post(`/api/customer/generate-customers?count=${count}`)
+  return response.data
+}
+
 export const deleteCustomer = async (id) => {
   const response = await api.delete(`/api/customer/${id}`)  
   return response.data
@@ -55,11 +60,6 @@ export const deleteCustomer = async (id) => {
 
 export const deleteMultipleCustomers = async ids => {
   const response = await api.post('/api/customer/delete-multiple', ids)
-  return response.data
-}
-
-export const generateCustomers = async (count = 10) => {
-  const response = await api.post(`/api/customer/generate-customers?count=${count}`)
   return response.data
 }
 
@@ -83,12 +83,22 @@ export const getOrders = async () => {
   }
 }
 
-export const getOrdersByCustomer = async customerNumber => {
+export const getOrdersByCustomer = async (customerNumber) => {
   try {
     const response = await api.get(`/api/order/by-customer/${customerNumber}`)
     return response.data
   } catch (error) {
     console.error(`Error fetching orders for customer ${customerNumber}:`, error)
+    throw error
+  }
+}
+
+export const getOrderById = async (id) => {
+  try {
+    const response = await api.get(`/api/order/${id}`)
+    return response.data
+  } catch (error) {
+    console.error(`Error fetching order ${id}`, error)
     throw error
   }
 }
@@ -131,6 +141,11 @@ export const createOrder = async (customerNumber, orderDto) => {
   return response.data
 }
 
+export const deleteOrder = async id => {
+  const { data } = await api.delete(`/api/order/${id}`)
+  return data
+}
+
 export const deleteOrders = async ids => {
   const response = await fetch(`${API_URL}/orders/delete-multiple`, {
     method: 'POST',
@@ -141,6 +156,22 @@ export const deleteOrders = async ids => {
     body: JSON.stringify(ids)
   })
   if (!response.ok) throw new Error('Failed to delete orders')
+}
+
+export async function updateOrder(id, orderData) {
+  const response = await api.put(`api/order/${id}`, orderData)
+  return response.data
+}
+
+export const updateOrderStatus = async (id, status) => {
+  try {
+    const response = await api.patch(`api/order/${id}/update-status`, { status })
+    return response.data
+  } catch (error) {
+    console.error(`Error updating status for order ${id}:`, error)
+    throw error
+  }
+  
 }
 
 export const register = async (userName, email, password) => {

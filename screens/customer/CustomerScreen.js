@@ -3,10 +3,12 @@ import { styles } from '../../styles'
 import { View, Text, TextInput, Modal, FlatList, TouchableOpacity, Button, Alert } from 'react-native'
 import { AuthContext } from '../../context/authContext'
 import { getCustomers, generateCustomers, deleteMultipleCustomers } from '../../api'
+import { useIsFocused } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
 
 export default function CustomerScreen({ navigation }) {
   const { isAdmin } = useContext(AuthContext)
+  const isFocused = useIsFocused()
   const [modalVisible, setModalVisible] = useState(false)
   const [customerCount, setCustomerCount] = useState('10')
   const [customers, setCustomers] = useState([])
@@ -32,6 +34,10 @@ export default function CustomerScreen({ navigation }) {
   useEffect(() => {
     loadCustomers()
   }, [])
+
+  useEffect(() => {
+    loadCustomers()
+  }, [isFocused])
 
   useEffect(() => {
     if (selectedIds.length === 0) {
@@ -62,13 +68,13 @@ export default function CustomerScreen({ navigation }) {
     <View style={styles.container}>
       {isAdmin && (
         <>
-          {/* Row 1: Add + Generate */}
-          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+          {/* Row 1: New + Generate */}
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10, marginTop: 15 }}>
             <TouchableOpacity
               style={[styles.button, { flex: 1, paddingVertical: 8 }]}
               onPress={() => navigation.navigate('AddCustomer')}
             >
-              <Text style={styles.buttonText}>Add Customer</Text>
+              <Text style={styles.buttonText}>New Customer</Text>
             </TouchableOpacity>
 
             <TouchableOpacity

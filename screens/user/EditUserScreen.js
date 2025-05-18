@@ -10,7 +10,7 @@ export default function EditUserScreen({ route }) {
       <Text>User ID: {user.id}</Text>
       <Text>Username: {user.username}</Text>
       <Text>Email: {user.email}</Text>
-      {/* Edit & Delete soon */}
     </View>
   )
 }
+

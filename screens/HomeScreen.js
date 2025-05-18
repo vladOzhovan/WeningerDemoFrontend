@@ -14,14 +14,14 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.buttonWrapper, styles.button]}
+        style={[styles.homeButton]}
         onPress={() => navigation.navigate("CustomerStack")}
       >
         <Text style={styles.buttonText}>Customers</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.buttonWrapper, styles.button]}
+        style={[styles.homeButton]}
         onPress={() => navigation.navigate("Orders")}
       >
         <Text style={styles.buttonText}>Orders</Text>
@@ -29,7 +29,7 @@ export default function HomeScreen({ navigation }) {
 
       {isAdmin && (
          <TouchableOpacity
-            style={[styles.buttonWrapper, styles.button]}
+            style={[styles.homeButton]}
             onPress={() => navigation.navigate("Users")}
           >
             <Text style={styles.buttonText}>Users</Text>
@@ -37,7 +37,7 @@ export default function HomeScreen({ navigation }) {
       )}
 
       <TouchableOpacity
-        style={[styles.buttonWrapper, styles.button]}
+        style={[styles.homeButton]}
         onPress={logout}
       >
         <Text style={styles.buttonText}>Logout</Text>
@@ -45,3 +45,4 @@ export default function HomeScreen({ navigation }) {
     </View>
   )
 }
+
