@@ -89,24 +89,19 @@ export default function CustomerDetailScreen({ route, navigation }) {
           {customer.firstName} {customer.secondName} (#{customer.customerNumber})
         </Text>
 
-        <View style={styles.newOrderWrapper}>
-          <Button
-            title="New Order"
-            onPress={() =>
-              navigation.navigate('AddOrder', {
-                customerNumber: customer.customerNumber
-              })
-            }
-          />
-          {isAdmin &&
-            <Button 
-              title="Edit Customer" 
-                onPress={() => 
-                  navigation.navigate('EditCustomer', { customer })} 
+        {isAdmin && (
+          <View style={styles.newOrderWrapper}>
+            <Button
+              title="New Order"
+              onPress={() =>
+                navigation.navigate('AddOrder', {
+                  customerNumber: customer.customerNumber
+                })
+              }
             />
-          }
-          
-        </View>
+            <Button title="Edit Customer" onPress={() => navigation.navigate('EditCustomer', { customer })} />
+          </View>
+        )}
 
         {loading && <ActivityIndicator style={{ marginVertical: 10 }} />}
 

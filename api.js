@@ -143,6 +143,16 @@ export const completeOrder = async (orderId) => {
   }
 }
 
+export const cancelOrder = async (orderId) => {
+  try {
+    const response = await api.put(`/api/order/cancel/${orderId}`)
+    return response.data
+  } catch (error) {
+    console.error('Error cancelling order:', error)
+    throw error
+  }
+}
+
 export const createOrder = async (customerNumber, orderDto) => {
   const response = await api.post(
     `/api/order/by-number/${customerNumber}`,

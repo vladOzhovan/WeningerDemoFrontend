@@ -1,13 +1,11 @@
-import { View, Text, Button, Alert, TouchableOpacity } from 'react-native'
-import { deleteOrder, takeOrder, releaseOrder, completeOrder, getOrderById, updateOrderStatus } from '../../api'
+import { View, Text, Button, Alert} from 'react-native'
+import { getOrderById, deleteOrder, takeOrder, releaseOrder, completeOrder, cancelOrder } from '../../api'
 import { styles } from '../../styles'
 import { formatDate } from '../../utils/dateUtils'
 import { useContext, useState, useCallback } from 'react'
 import { AuthContext } from '../../context/authContext'
 import { useFocusEffect } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
-
-const STATUSES = ['Pending', 'InProgress', 'Completed', 'Canceled']
 
 export default function OrderDetailScreen({ route, navigation }) {
   const { order: initialOrder } = route.params
@@ -62,32 +60,41 @@ export default function OrderDetailScreen({ route, navigation }) {
     ])
   }
 
-  const handleStatusPress = () => {
-    Alert.alert(
-      'Update Status',
-      `Current: ${order.status}`,
-      STATUSES.map(s => ({
-        text: s,
-        onPress: async () => {
-          if (s === order.status) return
-          try {
-            const updated = await updateOrderStatus(order.id, s)
-            setOrder(updated)
-            Toast.show({ type: 'success', text1: `Status updated to ${s}` })
-          } catch (e) {
-            console.error(e)
-            Toast.show({
-              type: 'error',
-              text1: 'Update failed',
-              text2: e.response?.data || e.message
-            })
-          }
-        }
-      }))
-    )
-  }
+  // const handleStatusPress = () => {
+  //   const canChangeStatus = isAdmin || (isWorker && order.isTaken && order.userId === currentUser?.id)
+
+  //   if (!canChangeStatus) {
+  //     Toast.show({ type: 'info', text1: 'You cannot change status for this order' })
+  //     return
+  //   }
+
+  //   Alert.alert(
+  //     'Update Status',
+  //     `Current: ${order.status}`,
+  //     STATUSES.map(s => ({
+  //       text: s,
+  //       onPress: async () => {
+  //         if (s === order.status) return
+  //         try {
+  //           const updated = await updateOrderStatus(order.id, s)
+  //           setOrder(updated)
+  //           Toast.show({ type: 'success', text1: `Status updated to ${s}` })
+  //         } catch (e) {
+  //           console.error(e)
+  //           Toast.show({
+  //             type: 'error',
+  //             text1: 'Update failed',
+  //             text2: e.response?.data || e.message
+  //           })
+  //         }
+  //       }
+  //     }))
+  //   )
+  // }
+  
 
   // Worker actions
+ 
   const handleTakeOrder = async () => {
     try {
       await takeOrder(order.id)
@@ -121,6 +128,18 @@ export default function OrderDetailScreen({ route, navigation }) {
     }
   }
 
+  const handleCancelOrder = async () => {
+    try {
+      await cancelOrder(order.id)
+      await fetchOrder()
+      Toast.show({ type: 'info', text1: `Order #${order.id} cancelled` })
+    } catch (e) {
+      console.error(e)
+      Toast.show({ type: 'error', text1: 'Cancel failed', text2: e.response?.data || e.message })
+    }
+  }
+  
+
   return (
     <View style={styles.detailContainer}>
       <View style={styles.detailContent}>
@@ -135,10 +154,7 @@ export default function OrderDetailScreen({ route, navigation }) {
           </Text>
         )}
         <View style={{ marginVertical: 12 }}>
-          <Text style={[styles.detailText, { marginBottom: 4 }]}>Status:</Text>
-          <TouchableOpacity onPress={handleStatusPress}>
-            <Text style={[styles.detailText, { color: '#0984e3' }]}>{order.status}</Text>
-          </TouchableOpacity>
+          <Text style={[styles.detailText, { marginBottom: 4 }]}>Status: {order.status}</Text>
         </View>
       </View>
 
@@ -148,6 +164,7 @@ export default function OrderDetailScreen({ route, navigation }) {
             <>
               <Button title="Release" color="#d63031" onPress={handleReleaseOrder} />
               <Button title="Complete" color="#0984e3" onPress={handleCompleteOrder} />
+              <Button title='Cancel' color="#6c5ce7" onPress={handleCancelOrder} />
             </>
           ) : (
             <Button title="Take" color="#00b894" onPress={handleTakeOrder} />
@@ -157,12 +174,11 @@ export default function OrderDetailScreen({ route, navigation }) {
 
       <View style={styles.footerButtons}>
         {isAdmin && (
-          <Button
-            title="Edit Order"
-            onPress={() => navigation.navigate('EditOrder', { order })}
-          />
+          <>
+            <Button title="Edit Order" onPress={() => navigation.navigate('EditOrder', { order })} />
+            <Button title="Delete Order" color="red" onPress={handleDelete} />
+          </>
         )}
-        <Button title="Delete Order" color="red" onPress={handleDelete} />
       </View>
     </View>
   )
