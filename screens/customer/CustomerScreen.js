@@ -196,11 +196,11 @@ export default function CustomerScreen({ navigation }) {
             onLongPress={() => handleLongPress(item)}
           >
             <Text>
-              {item.customerNumber} - {item.firstName} {item.secondName} ({item.overallStatus})
+              {item.customerNumber}: {item.firstName} {item.secondName} ({item.overallStatus})
             </Text>
           </TouchableOpacity>
         )}
-        ListFooterComponent={<View style={{ height: 80 }} />} // 👈 Добавь отступ
+        ListFooterComponent={<View style={{ height: 80 }} />}
       />
     </View>
   )

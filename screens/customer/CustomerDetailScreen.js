@@ -32,7 +32,6 @@ export default function CustomerDetailScreen({ route, navigation }) {
     setLoading(true)
     try {
       const data = await getOrdersByCustomer(customer.customerNumber)
-      //console.log('>>> orders from server:', data)
       setOrders(data)
     } catch (e) {
       if (e.response?.status === 404) {
@@ -86,22 +85,16 @@ export default function CustomerDetailScreen({ route, navigation }) {
     <View style={styles.detailContainer}>
       <View style={styles.detailContent}>
         <Text style={styles.detailTitle}>
-          {customer.firstName} {customer.secondName} (#{customer.customerNumber})
+          #{customer.customerNumber}: {customer.firstName} {customer.secondName}
         </Text>
 
-        {isAdmin && (
-          <View style={styles.newOrderWrapper}>
-            <Button
-              title="New Order"
-              onPress={() =>
-                navigation.navigate('AddOrder', {
-                  customerNumber: customer.customerNumber
-                })
-              }
-            />
-            <Button title="Edit Customer" onPress={() => navigation.navigate('EditCustomer', { customer })} />
-          </View>
-        )}
+        <Text style={styles.detailText}>
+          Created: {formatDate(customer.createdOn)}
+        </Text>
+
+        <Text style={styles.detailText}>
+          Status: {customer.overallStatus || '---'}
+        </Text>
 
         {loading && <ActivityIndicator style={{ marginVertical: 10 }} />}
 
@@ -130,7 +123,22 @@ export default function CustomerDetailScreen({ route, navigation }) {
         </View>
       </View>
       {isAdmin && (
-        <View style={styles.footerButtons}>
+        <View style={[styles.footerButtons]}>
+          <TouchableOpacity style={styles.deleteButton}
+            onPress={() => navigation.navigate('AddOrder', {
+              customerNumber: customer.customerNumber
+             })
+            } 
+          >
+            <Text style={styles.buttonText}>New Order</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.deleteButton]}
+            onPress={() => navigation.navigate('EditCustomer', { customer })}
+          >
+            <Text style={styles.buttonText}>Edit Customer</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteCustomer}>
             <Text style={styles.buttonText}>Delete</Text>
           </TouchableOpacity>

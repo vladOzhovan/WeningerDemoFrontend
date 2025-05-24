@@ -26,7 +26,7 @@ export default function OrderScreen({ navigation }) {
     setError(null)
     try {
       const query = {
-        CustomerNumber: search.trim()
+        search: search.trim()
       }
 
       let data = []
@@ -34,7 +34,7 @@ export default function OrderScreen({ navigation }) {
       if (filter === 'MyOrders' && isWorker) {
         data = await getUserOrderList()
       } else {
-        data = await getOrders({ customerNumber: search })
+        data = await getOrders({ search: search })
       }
 
       let filtered = []
@@ -289,42 +289,45 @@ export default function OrderScreen({ navigation }) {
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 10 }}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handlePress(item)}
-            onLongPress={() => handleLongPress(item)}
-            style={{
-              width: '100%',
-              marginBottom: 10,
-              padding: 10,
-              borderWidth: 2,
-              borderRadius: 6,
-              borderColor: selectedOrders.includes(item.id) ? 'blue' : '#ccc',
-              backgroundColor: selectedOrders.includes(item.id) ? '#e0f0ff' : 'white',
-              alignSelf: 'center',
-              marginHorizontal: 15
-            }}
-          >
-            <Text>Order #{item.id}</Text>
-            <Text>Date: {formatDate(item.createdOn)}</Text>
-            <Text>Total: ${item.total}</Text>
-            <View style={{ flexDirection: 'row', marginTop: 6 }}>
-              {isWorker &&
-                (item.isTaken ? (
-                  <>
-                    <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>
-                      <Text style={{ color: 'red' }}>Release</Text>
+          <>
+            <TouchableOpacity
+              onPress={() => handlePress(item)}
+              onLongPress={() => handleLongPress(item)}
+              style={{
+                width: '100%',
+                marginBottom: 10,
+                padding: 10,
+                borderWidth: 2,
+                borderRadius: 6,
+                borderColor: selectedOrders.includes(item.id) ? 'blue' : '#ccc',
+                backgroundColor: selectedOrders.includes(item.id) ? '#e0f0ff' : 'white',
+                alignSelf: 'center',
+                marginHorizontal: 15
+              }}
+            >
+              {/* <Text>Order №{item.id}</Text> */}
+              <Text>Name: {item.customerFullName}</Text>
+              <Text>Customer №: {item.customerNumber}</Text>
+              <Text>Date: {formatDate(item.createdOn)}</Text>
+              <View style={{ flexDirection: 'row', marginTop: 6 }}>
+                {isWorker &&
+                  (item.isTaken ? (
+                    <>
+                      <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>
+                        <Text style={{ color: 'red' }}>Release</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => handleCompleteOrder(item.id)} style={{ marginLeft: 15 }}>
+                        <Text style={{ color: 'blue' }}>Complete</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
+                      <Text style={{ color: 'green' }}>Take</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleCompleteOrder(item.id)} style={{ marginLeft: 15 }}>
-                      <Text style={{ color: 'blue' }}>Complete</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
-                    <Text style={{ color: 'green' }}>Take</Text>
-                  </TouchableOpacity>
-                ))}
-            </View>
-          </TouchableOpacity>
+                  ))}
+              </View>
+            </TouchableOpacity>
+          </>
         )}
       />
     </View>
