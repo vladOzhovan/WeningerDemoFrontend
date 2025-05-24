@@ -1,7 +1,7 @@
 import { useState, useLayoutEffect, useEffect, useRef, useContext } from 'react'
 import { styles } from '../../styles'
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
-import { getOrders, takeOrder, releaseOrder, completeOrder, deleteOrders, getUserOrderList } from '../../api'
+import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { getOrders, getUserOrderList, takeOrder, releaseOrder, completeOrder, deleteMultipleOrders } from '../../api'
 import { AuthContext } from '../../context/authContext'
 import { formatDate } from '../../utils/dateUtils'
 import Toast from 'react-native-toast-message'
@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message'
 export default function OrderScreen({ navigation }) {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('')
   const [error, setError] = useState(null)
   const [selectedOrders, setSelectedOrders] = useState([])
   const [filter, setFilter] = useState('Active')
@@ -16,23 +17,34 @@ export default function OrderScreen({ navigation }) {
   const selectionMode = selectedOrders.length > 0
   const flatListRef = useRef(null)
 
-  const filters = isWorker 
-    ? ['MyOrders', 'Active', 'Completed', 'Canceled'] 
-    : ['Active', 'Completed', 'Canceled', 'All']
+  const filters = isWorker
+    ? ['MyOrders', 'Pending', 'InProgress', 'Completed', 'Canceled', 'All']
+    : ['All', 'Completed', 'Canceled', 'InProgress', 'Pending']
 
   const loadOrders = async () => {
     setLoading(true)
     setError(null)
     try {
-      const data = filter === 'MyOrders' && isWorker 
-        ? await getUserOrderList()
-        : await getOrders()
+      const query = {
+        CustomerNumber: search.trim()
+      }
+
+      let data = []
+
+      if (filter === 'MyOrders' && isWorker) {
+        data = await getUserOrderList()
+      } else {
+        data = await getOrders({ customerNumber: search })
+      }
 
       let filtered = []
 
       switch (filter) {
-        case 'Active':
-          filtered = data.filter(order => order.status === 'Pending' || order.status === 'InProgress')
+        case 'Pending':
+          filtered = data.filter(order => order.status === 'Pending')
+          break
+        case 'InProgress': 
+          filtered = data.filter(order => order.status === 'InProgress')
           break
         case 'Completed':
           filtered = data.filter(order => order.status === 'Completed')
@@ -45,7 +57,6 @@ export default function OrderScreen({ navigation }) {
           filtered = data
           break
       }
-
       setOrders(filtered)
     } catch (err) {
       console.error(err)
@@ -70,6 +81,7 @@ export default function OrderScreen({ navigation }) {
 
   // Long-tap starts multi-select
   const handleLongPress = order => {
+    if (!isAdmin) return
     if (!selectionMode) {
       setSelectedOrders([order.id])
     } else {
@@ -91,7 +103,7 @@ export default function OrderScreen({ navigation }) {
   // Initial load
   useEffect(() => {
     loadOrders()
-  }, [filter])
+  }, [filter, search])
 
   // Handlers for take/release/complete
   const handleTakeOrder = async id => {
@@ -152,26 +164,36 @@ export default function OrderScreen({ navigation }) {
   }
 
   // Delete selected
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = () => {
     if (selectedOrders.length === 0) return
-    try {
-      await deleteOrders(selectedOrders)
-      setSelectedOrders([])
-      await loadOrders()
-      flatListRef.current?.scrollToOffset({ offset: 0, animated: false })
-      Toast.show({
-        type: 'success',
-        text1: 'Deleted',
-        text2: 'Selected orders deleted successfully.'
-      })
-    } catch (err) {
-      console.error(err)
-      Toast.show({
-        type: 'error',
-        text1: 'Delete failed',
-        text2: 'Could not delete selected orders.'
-      })
-    }
+
+    Alert.alert('Confirm Deletion', `Are you sure you want to delete ${selectedOrders.length} selected orders?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteMultipleOrders(selectedOrders)
+            setSelectedOrders([])
+            await loadOrders()
+            flatListRef.current?.scrollToOffset({ offset: 0, animated: false })
+            Toast.show({
+              type: 'success',
+              text1: 'Deleted',
+              text2: 'Selected orders deleted successfully.'
+            })
+          } catch (err) {
+            console.error(err)
+            Toast.show({
+              type: 'error',
+              text1: 'Delete failed',
+              text2: 'Could not delete selected orders.'
+            })
+          }
+        }
+      }
+    ])
   }
 
   return (
@@ -200,24 +222,56 @@ export default function OrderScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          paddingVertical: 5,
+          borderRadius: 5,
+          alignItems: 'center',
+          gap: 10,
+          rowGap: 10,
+          marginVertical: 5
+        }}
+      >
+        <View style={{ paddingHorizontal: 10 }}>
+          <TextInput
+            placeholder="Search by customer number"
+            value={search}
+            onChangeText={setSearch}
+            onSubmitEditing={loadOrders}
+            style={{
+              backgroundColor: '#f1f2f6',
+              padding: 10,
+              borderRadius: 6,
+              marginBottom: 10,
+              borderWidth: 1,
+              borderColor: '#ccc'
+            }}
+            returnKeyType="search"
+          />
+        </View>
         {filters.map(f => (
           <TouchableOpacity
             key={f}
             onPress={() => setFilter(f)}
             style={{
-              paddingVertical: 6,
+              width: 100,
+              paddingVertical: 10,
               paddingHorizontal: 12,
-              backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
-              borderRadius: 6
+              borderRadius: 6,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: filter === f ? '#0984e3' : '#dfe6e9'
             }}
           >
             <Text style={{ color: filter === f ? 'white' : 'black' }}>
               {
                 {
                   MyOrders: 'My Orders',
-                  Active: 'Pending/In Progress',
+                  Pending: 'Pending',
+                  InProgress: 'In Progress',
                   Completed: 'Completed',
                   Canceled: 'Canceled',
                   All: 'All'
@@ -227,49 +281,48 @@ export default function OrderScreen({ navigation }) {
           </TouchableOpacity>
         ))}
       </View>
-
       {loading && <ActivityIndicator style={{ margin: 10 }} />}
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
-
       <FlatList
         ref={flatListRef}
         data={orders}
         keyExtractor={item => item.id.toString()}
-        contentContainerStyle={{ paddingVertical: 10 }}
+        contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 10 }}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => handlePress(item)}
             onLongPress={() => handleLongPress(item)}
             style={{
-              marginBottom: 8,
-              padding: 12,
+              width: '100%',
+              marginBottom: 10,
+              padding: 10,
               borderWidth: 2,
               borderRadius: 6,
               borderColor: selectedOrders.includes(item.id) ? 'blue' : '#ccc',
-              backgroundColor: selectedOrders.includes(item.id) ? '#e0f0ff' : 'white'
+              backgroundColor: selectedOrders.includes(item.id) ? '#e0f0ff' : 'white',
+              alignSelf: 'center',
+              marginHorizontal: 15
             }}
           >
             <Text>Order #{item.id}</Text>
             <Text>Date: {formatDate(item.createdOn)}</Text>
             <Text>Total: ${item.total}</Text>
-
             <View style={{ flexDirection: 'row', marginTop: 6 }}>
-              {item.isTaken ? (
-                <>
-                  <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>
-                    <Text style={{ color: 'red' }}>Release</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleCompleteOrder(item.id)} style={{ marginLeft: 15 }}>
-                    <Text style={{ color: 'blue' }}>Complete</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                isWorker && (
+              {isWorker &&
+                (item.isTaken ? (
+                  <>
+                    <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>
+                      <Text style={{ color: 'red' }}>Release</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleCompleteOrder(item.id)} style={{ marginLeft: 15 }}>
+                      <Text style={{ color: 'blue' }}>Complete</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
                   <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
                     <Text style={{ color: 'green' }}>Take</Text>
                   </TouchableOpacity>
-                )
-              )}
+                ))}
             </View>
           </TouchableOpacity>
         )}

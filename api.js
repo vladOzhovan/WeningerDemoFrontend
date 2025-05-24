@@ -2,7 +2,7 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const api = axios.create({
-  baseURL: 'http://10.0.0.4:5052',
+  baseURL: 'http://10.0.0.5:5052',
 })
 
 // Interceptor for token
@@ -73,12 +73,14 @@ export const getCustomers = async () => {
   }
 }
 
-export const getOrders = async () => {
+export const getOrders = async (query = {}) => {
   try {
-    const response = await api.get(`/api/order`)
+    const response = await api.get(`/api/order`, {
+      params: query 
+    })
     return response.data
   } catch (error) {
-    console.error('Error fetching orders:', error)
+    console.error('Error fetching orders:', error.response?.data || error.message)
     throw error
   }
 }
@@ -162,23 +164,16 @@ export const createOrder = async (customerNumber, orderDto) => {
 }
 
 export const deleteOrder = async id => {
-  const { data } = await api.delete(`/api/order/${id}`)
-  return data
+  const response = await api.delete(`/api/order/${id}`)
+  return response.data
 }
 
-export const deleteOrders = async ids => {
-  const response = await fetch(`${API_URL}/orders/delete-multiple`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${yourAuthToken}`
-    },
-    body: JSON.stringify(ids)
-  })
-  if (!response.ok) throw new Error('Failed to delete orders')
+export const deleteMultipleOrders = async ids => {
+  const response = await api.post(`api/order/delete-multiple`, ids)
+  return response.data
 }
 
-export async function updateOrder(id, orderData) {
+export const updateOrder = async (id, orderData) => {
   const response = await api.put(`api/order/${id}`, orderData)
   return response.data
 }

@@ -129,11 +129,13 @@ export default function CustomerDetailScreen({ route, navigation }) {
           />
         </View>
       </View>
-      <View style={styles.footerButtons}>
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteCustomer}>
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
-      </View>
+      {isAdmin && (
+        <View style={styles.footerButtons}>
+          <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteCustomer}>
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   )
 }

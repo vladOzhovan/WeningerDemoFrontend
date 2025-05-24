@@ -50,7 +50,7 @@ export default function CustomerScreen({ navigation }) {
   }
 
   const handlePress = customer => {
-    if (selectionMode) {
+    if (selectionMode && isAdmin) {
       toggleSelection(customer.id)
     } else {
       navigation.navigate('CustomerDetail', { customer })
@@ -58,6 +58,7 @@ export default function CustomerScreen({ navigation }) {
   }
 
   const handleLongPress = customer => {
+    if (!isAdmin) return
     if (!selectionMode) {
       setSelectionMode(true)
     }
@@ -189,7 +190,7 @@ export default function CustomerScreen({ navigation }) {
             style={{
               padding: 10,
               borderBottomWidth: 1,
-              backgroundColor: selectedIds.includes(item.id) ? '#ffeaa7' : 'white'
+              backgroundColor: isAdmin && selectedIds.includes(item.id) ? '#ffeaa7' : 'white'
             }}
             onPress={() => handlePress(item)}
             onLongPress={() => handleLongPress(item)}
