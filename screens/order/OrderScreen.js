@@ -4,18 +4,21 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, A
 import { getOrders, getUserOrderList, takeOrder, releaseOrder, completeOrder, deleteMultipleOrders } from '../../api'
 import { AuthContext } from '../../context/authContext'
 import { formatDate } from '../../utils/dateUtils'
+import SortMenu from '../../SortMenu'
 import Toast from 'react-native-toast-message'
 
 export default function OrderScreen({ navigation }) {
-  const [orders, setOrders] = useState([])
+  const flatListRef = useRef(null)
   const [loading, setLoading] = useState(false)
+  const [orders, setOrders] = useState([])
   const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('date')
   const [error, setError] = useState(null)
-  const [selectedOrders, setSelectedOrders] = useState([])
   const [filter, setFilter] = useState('Active')
   const { isAdmin, isWorker } = useContext(AuthContext)
+  const [isDescending, setIsDescending] = useState(false)
+  const [selectedOrders, setSelectedOrders] = useState([])
   const selectionMode = selectedOrders.length > 0
-  const flatListRef = useRef(null)
 
   const filters = isWorker
     ? ['MyOrders', 'Pending', 'InProgress', 'Completed', 'Canceled', 'All']
@@ -34,7 +37,11 @@ export default function OrderScreen({ navigation }) {
       if (filter === 'MyOrders' && isWorker) {
         data = await getUserOrderList()
       } else {
-        data = await getOrders({ search: search })
+        data = await getOrders({
+          search: search,
+          isDescending: isDescending,
+          sortBy: sortBy
+        })
       }
 
       let filtered = []
@@ -103,7 +110,7 @@ export default function OrderScreen({ navigation }) {
   // Initial load
   useEffect(() => {
     loadOrders()
-  }, [filter, search])
+  }, [filter, search, sortBy, isDescending])
 
   // Handlers for take/release/complete
   const handleTakeOrder = async id => {
@@ -235,23 +242,44 @@ export default function OrderScreen({ navigation }) {
           marginVertical: 5
         }}
       >
-        <View style={{ paddingHorizontal: 10 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 10,
+            paddingHorizontal: 10
+          }}
+        >
           <TextInput
-            placeholder="Search by customer number"
+            placeholder="Search by number, name, title or description"
             value={search}
             onChangeText={setSearch}
             onSubmitEditing={loadOrders}
             style={{
+              flexGrow: 1,
+              flexShrink: 1,
+              minWidth: '80%',
               backgroundColor: '#f1f2f6',
               padding: 10,
               borderRadius: 6,
-              marginBottom: 10,
               borderWidth: 1,
-              borderColor: '#ccc'
+              borderColor: '#ccc',
+              marginRight: 10
             }}
             returnKeyType="search"
           />
         </View>
+
+        <SortMenu
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          isDescending={isDescending}
+          setIsDescending={setIsDescending}
+          onChange={loadOrders}
+        />
+
         {filters.map(f => (
           <TouchableOpacity
             key={f}
