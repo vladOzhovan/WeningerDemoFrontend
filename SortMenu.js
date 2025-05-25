@@ -36,7 +36,7 @@ export default function SortMenu({ sortBy, setSortBy, isDescending, setIsDescend
         }}
       >
         <Text style={{ color: 'white' }}>
-          {sortBy === 'date' ? 'Date' : sortBy === 'name' ? 'Name' : 'Number'} {isDescending ? '↑' : '↓'}
+          {sortBy === 'date' ? 'Date' : sortBy === 'name' ? 'Name' : 'Number'} {isDescending ? '↓' : '↑'}
         </Text>
       </TouchableOpacity>
 

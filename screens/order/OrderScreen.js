@@ -11,11 +11,11 @@ export default function OrderScreen({ navigation }) {
   const flatListRef = useRef(null)
   const [loading, setLoading] = useState(false)
   const [orders, setOrders] = useState([])
-  const [search, setSearch] = useState('')
-  const [sortBy, setSortBy] = useState('date')
   const [error, setError] = useState(null)
   const [filter, setFilter] = useState('Active')
   const { isAdmin, isWorker } = useContext(AuthContext)
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('date')
   const [isDescending, setIsDescending] = useState(false)
   const [selectedOrders, setSelectedOrders] = useState([])
   const selectionMode = selectedOrders.length > 0
@@ -31,9 +31,7 @@ export default function OrderScreen({ navigation }) {
       const query = {
         search: search.trim()
       }
-
       let data = []
-
       if (filter === 'MyOrders' && isWorker) {
         data = await getUserOrderList()
       } else {
@@ -229,8 +227,7 @@ export default function OrderScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-      <View
-        style={{
+      <View style={{
           flexDirection: 'row',
           flexWrap: 'wrap',
           justifyContent: 'center',
@@ -242,8 +239,7 @@ export default function OrderScreen({ navigation }) {
           marginVertical: 5
         }}
       >
-        <View
-          style={{
+        <View style={{
             flexDirection: 'row',
             flexWrap: 'wrap',
             justifyContent: 'space-between',
@@ -252,8 +248,7 @@ export default function OrderScreen({ navigation }) {
             paddingHorizontal: 10
           }}
         >
-          <TextInput
-            placeholder="Search by number, name, title or description"
+          <TextInput placeholder="Search by number, name, title or description"
             value={search}
             onChangeText={setSearch}
             onSubmitEditing={loadOrders}

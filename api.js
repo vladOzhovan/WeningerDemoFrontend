@@ -63,9 +63,11 @@ export const deleteMultipleCustomers = async ids => {
   return response.data
 }
 
-export const getCustomers = async () => {
+export const getCustomers = async (query = {}) => {
   try {
-    const response = await api.get(`/api/customer`)
+    const response = await api.get(`/api/customer`, {
+      params: query
+    })
     return response.data
   } catch (error) {
     console.error('There’s an error when trying to get the customers:', error)
