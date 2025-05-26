@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { styles } from '../../styles'
 import { View, TextInput, Button, Text } from 'react-native'
-import { register } from '../../api'
+import { registerUser } from '../../api'
 
 export default function RegisterScreen({ navigation }) {
   const [userName, setUserName] = useState('')
@@ -11,8 +11,8 @@ export default function RegisterScreen({ navigation }) {
 
   const onSubmit = async () => {
     try {
-      await register(userName, email, password)
-      navigation.replace('Home')
+      await registerUser(userName, email, password)
+      navigation.goBack()
     } catch {
       setError('Registration failed')
     }

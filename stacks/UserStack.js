@@ -2,7 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import UserScreen from "../screens/user/UserScreen"
 import RegisterScreen from "../screens/user/RegisterScreen"
 import UserListScreen from "../screens/user/UserListScreen"
-import EditUserScreen from "../screens/user/EditUserScreen"
+import UserDetailrScreen from '../screens/user/UserDetailrScreen'
+import EditUserScreen from '../screens/user/EditUserScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -31,9 +32,15 @@ export default function UserStack() {
       />
 
       <Stack.Screen
+        name="UserDetail"
+        component={UserDetailrScreen}
+        options={{ title: 'User Details' }}
+      />
+
+      <Stack.Screen 
         name="EditUser"
         component={EditUserScreen}
-        options={{ title: 'Edit User' }}
+        options={{title: 'Edit User'}}
       />
     </Stack.Navigator>
   )

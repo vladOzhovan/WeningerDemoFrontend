@@ -60,41 +60,7 @@ export default function OrderDetailScreen({ route, navigation }) {
     ])
   }
 
-  // const handleStatusPress = () => {
-  //   const canChangeStatus = isAdmin || (isWorker && order.isTaken && order.userId === currentUser?.id)
-
-  //   if (!canChangeStatus) {
-  //     Toast.show({ type: 'info', text1: 'You cannot change status for this order' })
-  //     return
-  //   }
-
-  //   Alert.alert(
-  //     'Update Status',
-  //     `Current: ${order.status}`,
-  //     STATUSES.map(s => ({
-  //       text: s,
-  //       onPress: async () => {
-  //         if (s === order.status) return
-  //         try {
-  //           const updated = await updateOrderStatus(order.id, s)
-  //           setOrder(updated)
-  //           Toast.show({ type: 'success', text1: `Status updated to ${s}` })
-  //         } catch (e) {
-  //           console.error(e)
-  //           Toast.show({
-  //             type: 'error',
-  //             text1: 'Update failed',
-  //             text2: e.response?.data || e.message
-  //           })
-  //         }
-  //       }
-  //     }))
-  //   )
-  // }
-  
-
-  // Worker actions
- 
+  // Worker actions 
   const handleTakeOrder = async () => {
     try {
       await takeOrder(order.id)

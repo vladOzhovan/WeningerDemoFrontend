@@ -33,12 +33,58 @@ api.interceptors.response.use(
 
 export default api
 
+export const registerUser = async (userName, email, password) => {
+  try {
+    const response = await api.post('/api/account/register-user', {
+      userName,
+      email,
+      password
+    })
+    return response.data
+  } catch (error) {
+    console.error('Registration error:', error.response?.data || error.message)
+    throw new Error('Registration failed')
+  }
+}
+
 export const getUsers = async () => {
   try {
-    const response = await api.get('/api/account/users')
+    const response = await api.get('/api/account/get-users')
     return response.data
   } catch (error) {
     console.error('Error fetching users:', error)
+    throw error
+  }
+}
+
+export const updatrUser = async (id, userData) => {
+  try {
+    const response = await api.put(`/api/account/update-user/${id}`, userData)
+    return response.data
+  } catch (error) {
+    console.error(`Error updating user ${id}:`, error)
+    throw error
+  }
+}
+
+export const deleteUser = async (id) => {
+  try {
+    const response = await api.delete(`/api/account/delete-user/${id}`)
+    return response.data 
+  } catch (error) {
+    console.error(`Error deleting user ${id}`)
+    throw error
+  }
+}
+
+export const getCustomers = async (query = {}) => {
+  try {
+    const response = await api.get(`/api/customer`, {
+      params: query
+    })
+    return response.data
+  } catch (error) {
+    console.error('There’s an error when trying to get the customers:', error)
     throw error
   }
 }
@@ -54,8 +100,13 @@ export const generateCustomers = async (count = 10) => {
 }
 
 export const deleteCustomer = async (id) => {
-  const response = await api.delete(`/api/customer/${id}`)  
-  return response.data
+  try {
+    const response = await api.delete(`/api/customer/${id}`)
+    return response.data
+  } catch (error) {
+    console.error(`Error deleting customer ${id}`)
+    throw error
+  }
 }
 
 export const deleteMultipleCustomers = async ids => {
@@ -63,14 +114,12 @@ export const deleteMultipleCustomers = async ids => {
   return response.data
 }
 
-export const getCustomers = async (query = {}) => {
+export const updateCustomer = async (id, customerData) => {
   try {
-    const response = await api.get(`/api/customer`, {
-      params: query
-    })
-    return response.data
+    const response = await api.put(`/api/customer/${id}`, customerData)
+    return response.data 
   } catch (error) {
-    console.error('There’s an error when trying to get the customers:', error)
+    console.error(`Error updating customer ${id}:`, error)
     throw error
   }
 }
@@ -158,26 +207,44 @@ export const cancelOrder = async (orderId) => {
 }
 
 export const createOrder = async (customerNumber, orderDto) => {
-  const response = await api.post(
-    `/api/order/by-number/${customerNumber}`,
-    orderDto
-  )
-  return response.data
+  try {
+    const response = await api.post(`/api/order/by-number/${customerNumber}`, orderDto)
+    return response.data
+  } catch (error) {
+    console.error(`Error creating order ${id}:`, error)
+    throw error
+  }
 }
 
 export const deleteOrder = async id => {
-  const response = await api.delete(`/api/order/${id}`)
-  return response.data
+  try {
+    const response = await api.delete(`/api/order/${id}`)
+    return response.data
+  } catch (error) {
+    console.error(`Error deleting order ${id}:`, error)
+    throw error
+  }
 }
 
 export const deleteMultipleOrders = async ids => {
-  const response = await api.post(`api/order/delete-multiple`, ids)
-  return response.data
+  try {
+    const response = await api.post(`api/order/delete-multiple`, ids)
+    return response.data
+  } catch (error) {
+    console.error(`Error deleting orders`, error)
+    throw error
+  } 
 }
 
 export const updateOrder = async (id, orderData) => {
-  const response = await api.put(`api/order/${id}`, orderData)
-  return response.data
+  try {
+    const response = await api.put(`api/order/${id}`, orderData)
+    return response.data
+  } catch (error) {
+    console.error(`Error updating order ${id}:`, error)
+    throw error
+  }
+  
 }
 
 export const updateOrderStatus = async (id, status) => {
@@ -187,21 +254,6 @@ export const updateOrderStatus = async (id, status) => {
   } catch (error) {
     console.error(`Error updating status for order ${id}:`, error)
     throw error
-  }
-  
-}
-
-export const register = async (userName, email, password) => {
-  try {
-    const response = await api.post('/api/account/register', {
-      userName,
-      email,
-      password,
-    })
-    return response.data
-  } catch (error) {
-    console.error('Registration error:', error.response?.data || error.message)
-    throw new Error('Registration failed')
   }
 }
 

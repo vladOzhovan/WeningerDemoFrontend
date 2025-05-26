@@ -1,4 +1,5 @@
-import { useState, useEffect, useContext } from "react"
+import { useState, useContext, useCallback } from "react"
+import {useFocusEffect} from '@react-navigation/native'
 import { styles } from "../../styles"
 import { View, Text, FlatList, TouchableOpacity } from "react-native"
 import { AuthContext } from "../../context/authContext"
@@ -26,13 +27,14 @@ export default function UserScreen({ navigation }) {
     }
   }
 
-  useEffect(() => {
-    loadUsers()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      loadUsers()
+    }, [])
+  )
 
-  // A function to handle the user click
   const handleUserPress = (user) => {
-    navigation.navigate("EditUser", { user })
+    navigation.navigate('UserDetail', { user })
   }
 
   return (

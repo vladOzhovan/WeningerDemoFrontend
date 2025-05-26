@@ -1,15 +1,34 @@
-import { View, Text } from 'react-native'
+import { useState } from 'react'
+import { View, Text, TextInput, Button, Alert } from 'react-native'
 import { styles } from '../../styles'
+import { updatrUser } from '../../api'
 
-export default function EditUserScreen({ route }) {
+export default function EditUserScreen({ route, navigation }) {
   const { user } = route.params
+
+  const [userName, setUserName] = useState(user.userName)
+  const [email, setEmail] = useState(user.email)
+
+  const handleUpdate = async () => {
+    try {
+      await updatrUser(user.id, { userName, email })
+      Alert.alert('Success', 'User updated successfully.')
+      navigation.goBack()
+    } catch (err) {
+      console.error(err)
+      Alert.alert('Error', 'Failed to update user.')
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Edit User</Text>
-      <Text>User ID: {user.id}</Text>
-      <Text>Username: {user.username}</Text>
-      <Text>Email: {user.email}</Text>
+      <Text style={styles.label}>Username</Text>
+      <TextInput style={styles.input} value={userName} onChangeText={setUserName} />
+
+      <Text style={styles.label}>Email</Text>
+      <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
+
+      <Button title="Save" onPress={handleUpdate} />
     </View>
   )
 }

@@ -1,19 +1,9 @@
-import { useState, useEffect, useContext, useLayoutEffect } from 'react'
+import { useState, useEffect, useContext, useLayoutEffect, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
 import { styles } from '../../styles'
-import {
-  View,
-  Text,
-  TextInput,
-  Modal,
-  FlatList,
-  TouchableOpacity,
-  Button,
-  Alert,
-  ActivityIndicator
-} from 'react-native'
+import { View, Text, TextInput, Modal, FlatList, TouchableOpacity, Button, Alert, ActivityIndicator } from 'react-native'
 import { AuthContext } from '../../context/authContext'
 import { getCustomers, generateCustomers, deleteMultipleCustomers } from '../../api'
-import { useIsFocused } from '@react-navigation/native'
 import SortMenu from '../../SortMenu'
 import Toast from 'react-native-toast-message'
 
@@ -29,7 +19,6 @@ export default function CustomerScreen({ navigation }) {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('date')
   const [isDescending, setIsDescending] = useState(false)
-  const isFocused = useIsFocused()
 
   // Load customers with search & sort params
   const loadCustomers = async () => {
@@ -57,10 +46,12 @@ export default function CustomerScreen({ navigation }) {
     })
   }, [navigation, loadCustomers])
 
-  // Fetch on focus or when search/sort changes
-  useEffect(() => {
-    if (isFocused) loadCustomers()
-  }, [isFocused, search, sortBy, isDescending])
+  // Reload when screen is focused or search/sort changes
+  useFocusEffect(
+    useCallback(() => {
+      loadCustomers()
+    }, [search, sortBy, isDescending])
+  )
 
   // Exit selection mode when none selected
   useEffect(() => {
