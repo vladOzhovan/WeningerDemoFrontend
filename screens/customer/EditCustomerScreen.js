@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, TextInput, Button, Text, Alert } from 'react-native'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import { updateCustomer } from '../../api'
 import Toast from 'react-native-toast-message'
 
@@ -40,20 +40,20 @@ export default function EditCustomerScreen({ route, navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Edit Customer</Text>
       <TextInput
-        style={styles.input}
+        style={styles.inputLogginEditCreate}
         placeholder="Customer Number"
         keyboardType="number-pad"
         value={customerNumber}
         onChangeText={setCustomerNumber}
       />
       <TextInput
-        style={styles.input}
+        style={styles.inputLogginEditCreate}
         placeholder="First Name"
         value={firstName}
         onChangeText={setFirstName}
       />
       <TextInput
-        style={styles.input}
+        style={styles.inputLogginEditCreate}
         placeholder="Second Name"
         value={secondName}
         onChangeText={setSecondName}

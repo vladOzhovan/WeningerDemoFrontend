@@ -1,57 +1,37 @@
-import { useState, useCallback } from 'react'
-import { Alert, View, Text, Button, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
-import { deleteCustomer, getOrdersByCustomer } from '../../api'
+import { View, Text, FlatList, Alert, TouchableOpacity } from 'react-native'
+import { useContext, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
-import { useContext } from 'react'
-import { AuthContext } from '../../context/authContext'
-import { styles } from '../../styles'
 import Toast from 'react-native-toast-message'
+import { getCustomerById, getOrdersByCustomer, deleteCustomer } from '../../api'
+import { AuthContext } from '../../context/authContext'
+import { styles } from '../../theme/styles'
 
 export default function CustomerDetailScreen({ route, navigation }) {
-  const { customer } = route.params
+  const { customer: initialCustomer } = route.params
+  const [customer, setCustomer] = useState(initialCustomer)
   const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(false)
   const { isAdmin } = useContext(AuthContext)
 
-  // Safely pick the date field from the item
-  const extractRawDate = item => {
-    return item.date ?? item.createdOn ?? item.createdAt ?? null
-  }
-
-  // Helper to format date strings in European format (DD.MM.YYYY)
-  const formatDate = rawDate => {
-    if (!rawDate) return '—'
-    const timestamp = Date.parse(rawDate)
-    if (isNaN(timestamp)) return '—'
-    // 'en-GB' locale uses DD/MM/YYYY by default; replace slashes with dots
-    return new Date(timestamp).toLocaleDateString('en-GB').replace(/\//g, '.')
-  }
-
-  // Load orders for this customer
-  const loadOrders = async () => {
-    setLoading(true)
+  const fetchCustomer = async () => {
     try {
-      const data = await getOrdersByCustomer(customer.customerNumber)
+      const updated = await getCustomerById(initialCustomer.id)
+      setCustomer(updated)
+      const data = await getOrdersByCustomer(updated.customerNumber)
       setOrders(data)
     } catch (e) {
-      if (e.response?.status === 404) {
-        setOrders([])
-      } else {
-        console.error('Error fetching orders for customer', customer.customerNumber, e)
-        Toast.show({
-          type: 'error',
-          text1: 'Error fetching orders',
-          text2: e.message
-        })
-      }
-    } finally {
-      setLoading(false)
+      console.error('Error fetching customer or orders', e)
+      Toast.show({ type: 'error', text1: 'Failed to load customer data' })
     }
   }
 
-  // Handle deleting the customer
+  useFocusEffect(
+    useCallback(() => {
+      fetchCustomer()
+    }, [initialCustomer.id])
+  )
+
   const handleDeleteCustomer = () => {
-    Alert.alert('Confirm Delete', 'Are you sure you want to delete this customer?', [
+    Alert.alert('Confirm Delete', `Delete customer ${customer.firstName}?`, [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
@@ -65,8 +45,8 @@ export default function CustomerDetailScreen({ route, navigation }) {
             console.error(e)
             Toast.show({
               type: 'error',
-              text1: 'Failed to delete customer',
-              text2: e.response?.data || 'Unknown error'
+              text1: 'Delete failed',
+              text2: e.response?.data || e.message
             })
           }
         }
@@ -74,66 +54,49 @@ export default function CustomerDetailScreen({ route, navigation }) {
     ])
   }
 
-  // Reload orders when screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      loadOrders()
-    }, [customer.customerNumber])
-  )
-
   return (
     <View style={styles.detailContainer}>
-      <View style={styles.detailContent}>
-        <Text style={styles.detailTitle}>
-          #{customer.customerNumber}: {customer.firstName} {customer.secondName}
-        </Text>
+      <Text style={styles.detailTitle}>
+        {customer.firstName} {customer.secondName}
+      </Text>
+      {/* <Text style={styles.detailText}>Customer №: {customer.customerNumber}</Text> */}
+      <Text style={styles.detailText}>Phone: {customer.phone}</Text>
+      <Text style={styles.detailText}>Email: {customer.email}</Text>
 
-        <Text style={styles.detailText}>
-          Created: {formatDate(customer.createdOn)}
-        </Text>
-
-        <Text style={styles.detailText}>
-          Status: {customer.overallStatus || '---'}
-        </Text>
-
-        {loading && <ActivityIndicator style={{ marginVertical: 10 }} />}
-
-        <View style={styles.listContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Orders:</Text>
+        {orders.length === 0 ? (
+          <Text style={styles.detailText}>No orders found.</Text>
+        ) : (
           <FlatList
             data={orders}
-            keyExtractor={o => o.id.toString()}
-            ListEmptyComponent={<Text>No orders yet.</Text>}
-            renderItem={({ item }) => {
-              const raw = extractRawDate(item)
-              return (
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('OrderDetail', { order: item })}
-                  style={{ padding: 8, borderBottomWidth: 1 }}
-                >
-                  <Text>
-                    Order #{item.id}
-                    {item.total != null && ` - $${item.total}`}
-                    {' - '}
-                    {formatDate(raw)}
-                  </Text>
-                </TouchableOpacity>
-              )
-            }}
+            keyExtractor={item => item.id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => navigation.navigate('OrderDetail', { order: item })}>
+                <Text style={styles.itemText}>
+                  №{item.id}: {item.title} — {item.status}
+                </Text>
+              </TouchableOpacity>
+            )}
           />
-        </View>
+        )}
       </View>
+
       {isAdmin && (
         <View style={[styles.footerButtons]}>
-          <TouchableOpacity style={styles.deleteButton}
-            onPress={() => navigation.navigate('AddOrder', {
-              customerNumber: customer.customerNumber
-             })
-            } 
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() =>
+              navigation.navigate('AddOrder', {
+                customerNumber: customer.customerNumber
+              })
+            }
           >
             <Text style={styles.buttonText}>New Order</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.deleteButton]}
+          <TouchableOpacity
+            style={[styles.deleteButton]}
             onPress={() => navigation.navigate('EditCustomer', { customer })}
           >
             <Text style={styles.buttonText}>Edit Customer</Text>

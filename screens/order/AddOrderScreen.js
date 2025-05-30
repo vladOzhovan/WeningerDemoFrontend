@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, TextInput, Button, Text, Alert } from 'react-native'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import { createOrder } from '../../api'
 import Toast from 'react-native-toast-message'
 
@@ -41,10 +41,10 @@ export default function AddOrderScreen({ route, navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>New Order for #{customerNumber}</Text>
 
-      <TextInput style={styles.input} placeholder="Title" value={title} onChangeText={setTitle} />
+      <TextInput style={styles.inputLogginEditCreate} placeholder="Title" value={title} onChangeText={setTitle} />
 
       <TextInput
-        style={[styles.input, { height: 100 }]}
+        style={[styles.inputLogginEditCreate, { height: 100 }]}
         placeholder="Description"
         value={description}
         onChangeText={setDescription}

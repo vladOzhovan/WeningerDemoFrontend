@@ -1,6 +1,6 @@
 import { View, Text, Button, Alert} from 'react-native'
 import { getOrderById, deleteOrder, takeOrder, releaseOrder, completeOrder, cancelOrder } from '../../api'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import { formatDate } from '../../utils/dateUtils'
 import { useContext, useState, useCallback } from 'react'
 import { AuthContext } from '../../context/authContext'

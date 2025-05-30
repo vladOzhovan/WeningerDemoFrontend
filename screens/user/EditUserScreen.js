@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, Text, TextInput, Button, Alert } from 'react-native'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import { updatrUser } from '../../api'
 
 export default function EditUserScreen({ route, navigation }) {
@@ -23,10 +23,10 @@ export default function EditUserScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Username</Text>
-      <TextInput style={styles.input} value={userName} onChangeText={setUserName} />
+      <TextInput style={styles.inputLogginEditCreate} value={userName} onChangeText={setUserName} />
 
       <Text style={styles.label}>Email</Text>
-      <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
+      <TextInput style={styles.inputLogginEditCreate} value={email} onChangeText={setEmail} keyboardType="email-address" />
 
       <Button title="Save" onPress={handleUpdate} />
     </View>

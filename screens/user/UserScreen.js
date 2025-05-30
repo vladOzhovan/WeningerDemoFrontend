@@ -1,6 +1,6 @@
 import { useState, useContext, useCallback } from "react"
 import {useFocusEffect} from '@react-navigation/native'
-import { styles } from "../../styles"
+import { styles } from '../../theme/styles'
 import { View, Text, FlatList, TouchableOpacity } from "react-native"
 import { AuthContext } from "../../context/authContext"
 import { getUsers } from "../../api"

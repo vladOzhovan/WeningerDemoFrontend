@@ -1,5 +1,6 @@
 import { useState, useLayoutEffect, useEffect, useRef, useContext } from 'react'
-import { styles } from '../../styles'
+import { Ionicons } from '@expo/vector-icons'
+import { styles } from '../../theme/styles'
 import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import { getOrders, getUserOrderList, takeOrder, releaseOrder, completeOrder, deleteMultipleOrders } from '../../api'
 import { AuthContext } from '../../context/authContext'
@@ -8,6 +9,7 @@ import SortMenu from '../../SortMenu'
 import Toast from 'react-native-toast-message'
 
 export default function OrderScreen({ navigation }) {
+  const inputRef = useRef(null)
   const flatListRef = useRef(null)
   const [loading, setLoading] = useState(false)
   const [orders, setOrders] = useState([])
@@ -203,68 +205,35 @@ export default function OrderScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 1 }]}>
-      {isAdmin && selectionMode && (
-        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
-          <TouchableOpacity
-            style={[styles.button, { flex: 1, backgroundColor: '#b2bec3', paddingVertical: 8 }]}
-            onPress={() => setSelectedOrders([])}
-          >
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, { flex: 1, backgroundColor: '#0984e3', paddingVertical: 8 }]}
-            onPress={() => setSelectedOrders(orders.map(o => o.id))}
-          >
-            <Text style={styles.buttonText}>Select All</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, { flex: 1, backgroundColor: '#d63031', paddingVertical: 8 }]}
-            onPress={handleDeleteSelected}
-          >
-            <Text style={styles.buttonText}>Delete ({selectedOrders.length})</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-      <View style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          paddingVertical: 5,
-          borderRadius: 5,
-          alignItems: 'center',
-          gap: 10,
-          rowGap: 10,
-          marginVertical: 5
-        }}
-      >
-        <View style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 10,
-            paddingHorizontal: 10
-          }}
-        >
-          <TextInput placeholder="Search by number, name, title or description"
+      {/* Search + Sort */}
+      <View style={{ flexDirection: 'row', gap: 10, paddingVertical: 5 }}>
+        <View style={{ flex: 1, position: 'relative' }}>
+          <TextInput
+            style={styles.inputSearch}
+            placeholder="Search"
+            ref={inputRef}
             value={search}
             onChangeText={setSearch}
             onSubmitEditing={loadOrders}
-            style={{
-              flexGrow: 1,
-              flexShrink: 1,
-              minWidth: '80%',
-              backgroundColor: '#f1f2f6',
-              padding: 10,
-              borderRadius: 6,
-              borderWidth: 1,
-              borderColor: '#ccc',
-              marginRight: 10
-            }}
             returnKeyType="search"
           />
+          {search.length > 0 && (
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                right: 10,
+                top: '50%',
+                transform: [{ translateY: -12 }],
+                zIndex: 1
+              }}
+              onPress={() => {
+                setSearch('')
+                inputRef.current?.blur()
+              }}
+            >
+              <Ionicons name="close-circle" size={24} color="gray" />
+            </TouchableOpacity>
+          )}
         </View>
 
         <SortMenu
@@ -274,19 +243,30 @@ export default function OrderScreen({ navigation }) {
           setIsDescending={setIsDescending}
           onChange={loadOrders}
         />
+      </View>
 
+      {/* Filters */}
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: 5,
+          marginBottom: 10
+        }}
+      >
         {filters.map(f => (
           <TouchableOpacity
             key={f}
             onPress={() => setFilter(f)}
             style={{
-              width: 100,
-              paddingVertical: 10,
+              paddingVertical: 8,
               paddingHorizontal: 12,
               borderRadius: 6,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: filter === f ? '#0984e3' : '#dfe6e9'
+              backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
+              margin: 4
             }}
           >
             <Text style={{ color: filter === f ? 'white' : 'black' }}>
@@ -304,55 +284,80 @@ export default function OrderScreen({ navigation }) {
           </TouchableOpacity>
         ))}
       </View>
+
+      {isAdmin && selectionMode && (
+        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+          <TouchableOpacity
+            style={styles.buttonSelectionCancel}
+            onPress={() => setSelectedOrders([])}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.buttonSelectionSelectAll}
+            onPress={() => setSelectedOrders(orders.map(o => o.id))}
+          >
+            <Text style={styles.buttonText}>Select All</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.buttonSelectionDelete}
+            onPress={handleDeleteSelected}
+          >
+            <Text style={styles.buttonText}>Delete ({selectedOrders.length})</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {loading && <ActivityIndicator style={{ margin: 10 }} />}
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
-      <FlatList
-        ref={flatListRef}
-        data={orders}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 10 }}
-        renderItem={({ item }) => (
-          <>
-            <TouchableOpacity
-              onPress={() => handlePress(item)}
-              onLongPress={() => handleLongPress(item)}
-              style={{
-                width: '100%',
-                marginBottom: 10,
-                padding: 10,
-                borderWidth: 2,
-                borderRadius: 6,
-                borderColor: selectedOrders.includes(item.id) ? 'blue' : '#ccc',
-                backgroundColor: selectedOrders.includes(item.id) ? '#e0f0ff' : 'white',
-                alignSelf: 'center',
-                marginHorizontal: 15
-              }}
-            >
-              {/* <Text>Order №{item.id}</Text> */}
-              <Text>Name: {item.customerFullName}</Text>
-              <Text>Customer №: {item.customerNumber}</Text>
-              <Text>Date: {formatDate(item.createdOn)}</Text>
-              <View style={{ flexDirection: 'row', marginTop: 6 }}>
-                {isWorker &&
-                  (item.isTaken ? (
-                    <>
-                      <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>
-                        <Text style={{ color: 'red' }}>Release</Text>
+
+      <View style={{ flex: 1, width: '95%' }}>
+        <FlatList
+          ref={flatListRef}
+          data={orders}
+          keyExtractor={item => item.id.toString()}
+          contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 10 }}
+          renderItem={({ item }) => (
+            <>
+              <TouchableOpacity
+                style={[
+                  styles.orderList,
+                  selectedOrders.includes(item.id) && {
+                    borderColor: '#b23939',
+                    backgroundColor: '#eec7be'
+                  },
+                  { width: '100%' }
+                ]}
+                onPress={() => handlePress(item)}
+                onLongPress={() => handleLongPress(item)}
+              >
+                <Text>Name: {item.customerFullName}</Text>
+                <Text>Customer №: {item.customerNumber}</Text>
+                <Text>Date: {formatDate(item.createdOn)}</Text>
+                <View style={{ flexDirection: 'row', marginTop: 6 }}>
+                  {isWorker &&
+                    (item.isTaken ? (
+                      <>
+                        <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>
+                          <Text style={{ color: 'red' }}>Release</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleCompleteOrder(item.id)} style={{ marginLeft: 15 }}>
+                          <Text style={{ color: 'blue' }}>Complete</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
+                        <Text style={{ color: 'green' }}>Take</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => handleCompleteOrder(item.id)} style={{ marginLeft: 15 }}>
-                        <Text style={{ color: 'blue' }}>Complete</Text>
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
-                      <Text style={{ color: 'green' }}>Take</Text>
-                    </TouchableOpacity>
-                  ))}
-              </View>
-            </TouchableOpacity>
-          </>
-        )}
-      />
+                    ))}
+                </View>
+              </TouchableOpacity>
+            </>
+          )}
+        />
+      </View>
     </View>
   )
 }

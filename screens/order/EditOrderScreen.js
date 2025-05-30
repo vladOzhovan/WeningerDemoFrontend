@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, Text, TextInput, Button, Alert } from 'react-native'
 import { updateOrder } from '../../api'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import Toast from 'react-native-toast-message'
 
 export default function EditOrderScreen({ route, navigation }) {

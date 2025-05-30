@@ -84,19 +84,39 @@ export const getCustomers = async (query = {}) => {
     })
     return response.data
   } catch (error) {
-    console.error('There’s an error when trying to get the customers:', error)
+    console.error('Error when trying to get the customers:', error)
     throw error
   }
 }
 
-export const createCustomer = async ({ customerNumber, firstName, secondName }) => {
-  const response = await api.post('/api/customer', { customerNumber, firstName, secondName })
-  return response.data
+export const getCustomerById = async (id) => {
+  try {
+    const response = await api.get(`/api/customer/${id}`)
+    return response.data
+  } catch (error) {
+    console.error(`Error when trying to get the customer ${id}`, error)
+    throw error
+  }
+}
+
+export const createCustomer = async customerDto => {
+  try {
+    const response = await api.post('/api/customer', customerDto)
+    return response.data
+  } catch (error) {
+    console.error('Error creating customer:', error.response?.data || error.message)
+    throw error
+  }
 }
 
 export const generateCustomers = async (count = 10) => {
-  const response = await api.post(`/api/customer/generate-customers?count=${count}`)
-  return response.data
+  try {
+    const response = await api.post(`/api/customer/generate-customers?count=${count}`)
+    return response.data 
+  } catch (error) {
+    console.error(`Error generating customers`)
+    throw error
+  }
 }
 
 export const deleteCustomer = async (id) => {
@@ -110,8 +130,13 @@ export const deleteCustomer = async (id) => {
 }
 
 export const deleteMultipleCustomers = async ids => {
-  const response = await api.post('/api/customer/delete-multiple', ids)
-  return response.data
+  try {
+    const response = await api.post('/api/customer/delete-multiple', ids)
+    return response.data 
+  } catch (error) {
+    console.error(`Error deleting customers:`, error)
+    throw error
+  }
 }
 
 export const updateCustomer = async (id, customerData) => {

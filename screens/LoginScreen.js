@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react'
-import { styles } from '../styles'
+import { styles } from '../theme/styles'
 import { View, TextInput, Button, Text } from 'react-native'
 import { AuthContext } from '../context/authContext'
 
@@ -20,8 +20,8 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      <TextInput style={styles.input} placeholder="Username"    onChangeText={setUserName}/>
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={setPassword}/>
+      <TextInput style={styles.inputLogginEditCreate} placeholder="Username"    onChangeText={setUserName}/>
+      <TextInput style={styles.inputLogginEditCreate} placeholder="Password" secureTextEntry onChangeText={setPassword}/>
       {error && <Text style={styles.error}>{error}</Text>}
       <Button title="Login" onPress={onSubmit}/>
     </View>

@@ -1,5 +1,5 @@
 import { View, Text, Button, Alert } from 'react-native'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import { useContext, useState, useCallback } from 'react'
 import { AuthContext } from '../../context/authContext'
 import { deleteUser, getUsers } from '../../api'

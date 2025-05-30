@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { View, Text, FlatList, TouchableOpacity } from 'react-native'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import { getUsers } from '../../api'
 
 export default function UserListScreen({ navigation }) {

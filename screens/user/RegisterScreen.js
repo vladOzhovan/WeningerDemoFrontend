@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { styles } from '../../styles'
+import { styles } from '../../theme/styles'
 import { View, TextInput, Button, Text } from 'react-native'
 import { registerUser } from '../../api'
 
@@ -21,9 +21,9 @@ export default function RegisterScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register User</Text>
-      <TextInput style={styles.input} placeholder="Username" onChangeText={setUserName}/>
-      <TextInput style={styles.input} placeholder="Email"    onChangeText={setEmail}/>
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={setPassword}/>
+      <TextInput style={styles.inputLogginEditCreate} placeholder="Username" onChangeText={setUserName}/>
+      <TextInput style={styles.inputLogginEditCreate} placeholder="Email"    onChangeText={setEmail}/>
+      <TextInput style={styles.inputLogginEditCreate} placeholder="Password" secureTextEntry onChangeText={setPassword}/>
       {error && <Text style={styles.error}>{error}</Text>}
       <Button title="Add new User" onPress={onSubmit}/>
     </View>

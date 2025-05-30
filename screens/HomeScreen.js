@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { styles } from "../styles"
+import { styles } from '../theme/styles'
 import { View, Text, TouchableOpacity } from "react-native"
 import { AuthContext } from "../context/authContext"
 
