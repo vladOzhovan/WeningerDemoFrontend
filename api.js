@@ -139,10 +139,10 @@ export const deleteMultipleCustomers = async ids => {
   }
 }
 
-export const updateCustomer = async (id, customerData) => {
+export const updateCustomer = async (id, customerDto) => {
   try {
-    const response = await api.put(`/api/customer/${id}`, customerData)
-    return response.data 
+    const response = await api.put(`/api/customer/${id}`, customerDto)
+    return response.data
   } catch (error) {
     console.error(`Error updating customer ${id}:`, error)
     throw error

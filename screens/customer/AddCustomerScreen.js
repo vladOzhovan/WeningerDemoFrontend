@@ -30,7 +30,6 @@ export default function AddCustomerScreen({ navigation }) {
     apartment: '',
   })
 
-  // Сбрасываем ошибки для вложенных полей Address
   const handleAddressChange = (field, value) => {
     setAddress(prev => ({ ...prev, [field]: value }))
     setFieldErrors(prev => {
@@ -53,10 +52,8 @@ export default function AddCustomerScreen({ navigation }) {
       : null
 
   const onSubmit = async () => {
-    // 1) Очистим предыдущие ошибки
     setFieldErrors({})
 
-    // 2) Клиентская валидация
     const errs = {}
 
     const num = parseInt(customerNumber, 10)
@@ -74,13 +71,11 @@ export default function AddCustomerScreen({ navigation }) {
       errs.SecondName = ['Second name is required.']
     }
 
-    // Если есть ошибки клиентской валидации — покажем их и не отправляем запрос
     if (Object.keys(errs).length) {
       setFieldErrors(errs)
       return
     }
 
-    // 3) Подготовим нагрузку для сервера
     const payload = {
       customerNumber: num,
       firstName: firstName.trim(),
@@ -89,7 +84,6 @@ export default function AddCustomerScreen({ navigation }) {
       phoneNumber: phoneNumber.trim() || undefined,
     }
 
-    // Включаем address, только если хоть одно поле непустое
     const hasAddressData = Object.values(address).some(v => v.trim() !== '')
     if (hasAddressData) {
       const addr = {}
@@ -104,13 +98,11 @@ export default function AddCustomerScreen({ navigation }) {
       payload.address = addr
     }
 
-    // 4) Отправляем на сервер
     try {
       await createCustomer(payload)
       Toast.show({ type: 'success', text1: 'Customer added' })
       navigation.goBack()
     } catch (e) {
-      // 5) Обработка ошибок валидации от сервера
       const srvErrs = e.response?.data?.errors
       if (srvErrs) {
         setFieldErrors(srvErrs)

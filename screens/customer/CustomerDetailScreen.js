@@ -7,7 +7,7 @@ import { getCustomerById, getOrdersByCustomer, deleteCustomer } from '../../api'
 import Toast from 'react-native-toast-message'
 
 export default function CustomerDetailScreen({ route, navigation }) {
-  const noData = 'no data'
+  const noData = ' - - - '
   const { customer: initialCustomer } = route.params
   const [customer, setCustomer] = useState(initialCustomer)
   const [orders, setOrders] = useState([])
