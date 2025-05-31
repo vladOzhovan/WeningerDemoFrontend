@@ -125,12 +125,12 @@ export default function OrderDetailScreen({ route, navigation }) {
       </View>
 
       {isWorker && (
-        <View style={[styles.footerButtons, { marginBottom: 16 }]}>
+        <View style={[styles.buttonOrderDetails, { marginBottom: 16 }]}>
           {order.isTaken ? (
             <>
               <Button title="Release" color="№d63031" onPress={handleReleaseOrder} />
               <Button title="Complete" color="№0984e3" onPress={handleCompleteOrder} />
-              <Button title='Cancel' color="№6c5ce7" onPress={handleCancelOrder} />
+              <Button title="Cancel" color="№6c5ce7" onPress={handleCancelOrder} />
             </>
           ) : (
             <Button title="Take" color="№00b894" onPress={handleTakeOrder} />
@@ -138,11 +138,11 @@ export default function OrderDetailScreen({ route, navigation }) {
         </View>
       )}
 
-      <View style={styles.footerButtons}>
+      <View style={[styles.buttonOrderDetails, { flexDirection: 'row', gap: 10 }]}>
         {isAdmin && (
           <>
-            <Button title="Edit Order" onPress={() => navigation.navigate('EditOrder', { order })} />
             <Button title="Delete Order" color="red" onPress={handleDelete} />
+            <Button title="Edit Order" onPress={() => navigation.navigate('EditOrder', { order })} />
           </>
         )}
       </View>

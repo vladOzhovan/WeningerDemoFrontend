@@ -8,7 +8,7 @@ import UserStack from './stacks/UserStack'
 import CustomerStack from './stacks/CustomerStack'
 import HomeScreen from './screens/HomeScreen'
 import OrderScreen from './screens/order/OrderScreen'
-import OrderDetailScreen from './screens/order/OrderDtailScreen'
+import OrderDetailScreen from './screens/order/OrderDetailScreen'
 import AddCustomerScreen from './screens/customer/AddCustomerScreen'
 import AddOrderScreen from './screens/order/AddOrderScreen'
 import CustomerDetailScreen from './screens/customer/CustomerDetailScreen'
@@ -68,7 +68,7 @@ function AppStack() {
 
       {isAdmin && (
         <Stack.Screen
-          name="Users"
+          name="UserStack"
           component={UserStack}
           options={{ headerShown: false }}
         />

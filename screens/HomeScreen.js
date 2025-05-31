@@ -30,7 +30,7 @@ export default function HomeScreen({ navigation }) {
       {isAdmin && (
          <TouchableOpacity
             style={[styles.homeButton]}
-            onPress={() => navigation.navigate("Users")}
+            onPress={() => navigation.navigate("UserStack")}
           >
             <Text style={styles.buttonText}>Users</Text>
           </TouchableOpacity>
