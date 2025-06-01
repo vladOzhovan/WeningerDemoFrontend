@@ -154,8 +154,8 @@ export const styles = StyleSheet.create({
     paddingBottom: 50,
     paddingHorizontal: 10,
     borderTopWidth: 1,
-    borderBlockColor: 'red',
-    backgroundColor: '#dfcdda',
+    borderBlockColor: '#5b4947',
+    backgroundColor: '',
     alignItems: 'center',
     alignContent: 'center',
     flexDirection: 'row',
@@ -179,8 +179,9 @@ export const styles = StyleSheet.create({
 
   detailContent: {
     flex: 1,
+    paddingTop: 100,
     width: '100%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
 
@@ -200,7 +201,7 @@ export const styles = StyleSheet.create({
   customerDetailText: {
     fontSize: 18,
     marginBottom: 1,
-    textAlign: 'center',
+    textAlign: 'left',
   },
 
   customerAddressText: {
@@ -210,14 +211,28 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  customerAddressBlock: { 
-    marginVertical: 1,
-    borderTopWidth: 1,
-    paddingTop: 7,
-    alignSelf: 'center',
+  customerAddressBlock: {
+    marginVertical: 5,
+    marginLeft: 5,
+    alignContent: 'flex-start',
+    alignSelf: 'flex-start',
+    alignItems: 'flex-start',
   },
 
+  customerAddressBlockTitle: {
+    marginVertical: 5,
+    borderTopWidth: 1,
+    paddingTop: 10,
+    alignContent: 'center',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+  },
 
+  orderDetailText: {
+    fontSize: 18,
+    marginBottom: 12,
+    textAlign: 'justify',
+  },
 
 
 })

@@ -1,4 +1,4 @@
-import { View, Text, Button, Alert} from 'react-native'
+import { View, Text, Button, Alert, ScrollView} from 'react-native'
 import { getOrderById, deleteOrder, takeOrder, releaseOrder, completeOrder, cancelOrder } from '../../api'
 import { styles } from '../../theme/styles'
 import { formatDate } from '../../utils/dateUtils'
@@ -112,16 +112,30 @@ export default function OrderDetailScreen({ route, navigation }) {
         <Text style={styles.detailTitle}>Order №{order.id}</Text>
 
         {formattedDate && <Text style={styles.detailText}>Date: {formattedDate}</Text>}
-        {order.title && <Text style={styles.detailText}>Title: {order.title}</Text>}
-        {order.description && (
-          <Text style={styles.detailText}>
-            Description:{'\n'}
-            {order.description}
-          </Text>
-        )}
-        <View style={{ marginVertical: 12 }}>
+        <View style={styles.detailText}>
           <Text style={[styles.detailText, { marginBottom: 4 }]}>Status: {order.status}</Text>
         </View>
+        {order.title && <Text style={styles.detailText}>Title: {order.title}</Text>}
+        {order.description && (
+          <View style={{ width: '100%', marginVertical: 10 }}>
+            <ScrollView
+              style={{
+                width: '100%',
+                borderWidth: 1,
+                borderColor: '#ccc',
+                borderRadius: 8,
+                padding: 10,
+                maxHeight: 300,
+                backgroundColor: '#f9f9f9',
+              }}
+              contentContainerStyle={{ paddingBottom: 5 }}
+              showsVerticalScrollIndicator={true}
+              nestedScrollEnabled={true}
+            >
+              <Text style={styles.orderDetailText}>{order.description}</Text>
+            </ScrollView>
+          </View>
+        )}
       </View>
 
       {isWorker && (

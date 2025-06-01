@@ -147,7 +147,7 @@ export default function EditCustomerScreen({ route, navigation }) {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 100}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={{ padding: 20 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ padding: 50 }} keyboardShouldPersistTaps="handled">
           <Text style={styles.title}>Edit Customer</Text>
 
           <Text style={styles.label}>
@@ -275,7 +275,7 @@ export default function EditCustomerScreen({ route, navigation }) {
           />
           {renderErrors('Address.Apartment')}
 
-          <View style={{ marginTop: 30 }}>
+          <View style={{ paddingTop: 20, paddingBottom: 15 }}>
             <Button title="Save Changes" onPress={onSubmit} />
           </View>
         </ScrollView>

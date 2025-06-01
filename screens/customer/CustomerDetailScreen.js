@@ -1,5 +1,6 @@
 import { useContext, useState, useCallback } from 'react'
 import { styles } from '../../theme/styles'
+import { formatDate } from '../../utils/dateUtils'
 import { AuthContext } from '../../context/authContext'
 import { useFocusEffect } from '@react-navigation/native'
 import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native'
@@ -12,6 +13,7 @@ export default function CustomerDetailScreen({ route, navigation }) {
   const [customer, setCustomer] = useState(initialCustomer)
   const [orders, setOrders] = useState([])
   const { isAdmin } = useContext(AuthContext)
+  const formattedDate = formatDate(customer.createdOn)
 
   const fetchCustomer = async () => {
     try {
@@ -83,7 +85,6 @@ export default function CustomerDetailScreen({ route, navigation }) {
 
     return (
       <View style={ styles.customerAddressBlock }>
-        <Text style={[styles.title, { fontWeight: 'bold', marginBottom: 4 }]}>Address</Text>
         {hasAnyAddress ? (
           <>
             {renderField('Country', country)}
@@ -115,7 +116,7 @@ export default function CustomerDetailScreen({ route, navigation }) {
         <View style={{ alignItems: 'center', marginBottom: 7 }}>
           <View style={{ alignItems: 'flex-start' }}>
             <Text style={styles.customerDetailText}>Status: {customer.overallStatus}</Text>
-            <Text style={styles.customerDetailText}>Created: {new Date(customer.createdOn).toLocaleDateString()}</Text>
+            <Text style={styles.customerDetailText}>Created: {formattedDate}</Text>
             <Text style={styles.customerDetailText}>Phone: {renderPhone()}</Text>
             <Text style={styles.customerDetailText}>
               Email: {customer.email?.trim() !== '' ? customer.email : noData}
@@ -123,6 +124,9 @@ export default function CustomerDetailScreen({ route, navigation }) {
           </View>
         </View>
 
+        <View style={styles.customerAddressBlockTitle}>
+          <Text style={[styles.title, { fontWeight: 'bold', marginBottom: 5 }]}>Address</Text>
+        </View>
         {renderAddressBlock()}
 
         <Text style={[styles.title, { marginTop: 10, marginBottom: 5 }]}>Orders:</Text>
@@ -145,21 +149,21 @@ export default function CustomerDetailScreen({ route, navigation }) {
       {isAdmin && (
         <View style={styles.customerFooterButton}>
           <TouchableOpacity
-            style={[styles.button, { flex: 1, backgroundColor: '#d63031', marginHorizontal: 4 }]}
+            style={[styles.button, { flex: 1, backgroundColor: '#bf1d0b', marginHorizontal: 4 }]}
             onPress={handleDeleteCustomer}
           >
             <Text style={styles.buttonText}>Delete</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, { flex: 1, backgroundColor: '#fdcb6e', marginHorizontal: 4 }]}
+            style={[styles.button, { flex: 1, backgroundColor: '#094d76', marginHorizontal: 4 }]}
             onPress={() => navigation.navigate('EditCustomer', { customer })}
           >
             <Text style={styles.buttonText}>Edit</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, { flex: 1, backgroundColor: '#dc80e8', marginHorizontal: 4 }]}
+            style={[styles.button, { flex: 1, backgroundColor: '#929699', marginHorizontal: 4 }]}
             onPress={() =>
               navigation.navigate('AddOrder', {
                 customerNumber: customer.customerNumber,

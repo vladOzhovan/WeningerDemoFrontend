@@ -1,5 +1,16 @@
 import { useState } from 'react'
-import { View, Text, TextInput, Button, Alert } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native'
 import { updateOrder } from '../../api'
 import { styles } from '../../theme/styles'
 import Toast from 'react-native-toast-message'
@@ -36,20 +47,38 @@ export default function EditOrderScreen({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Title</Text>
-      <TextInput style={styles.detailText} value={title} onChangeText={setTitle} placeholder="Enter title" />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 100}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={{ padding: 50 }} keyboardShouldPersistTaps="handled">
+          <Text style={styles.title}>Edit Order</Text>
 
-      <Text style={styles.title}>Description</Text>
-      <TextInput
-        style={[styles.detailText, { height: 100 }]}
-        value={description}
-        onChangeText={setDescription}
-        multiline
-        placeholder="Enter description"
-      />
-      <Button title="Save Changes" onPress={handleUpdate} />
-    </View>
+          <Text style={styles.label}>Title</Text>
+          <TextInput
+            style={styles.inputLogginEditCreate}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Enter title"
+          />
+
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={[styles.inputLogginEditCreate, { height: 100 }]}
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            placeholder="Enter description"
+          />
+
+          <View style={{ paddingTop: 20, paddingBottom: 15 }}>
+            <Button title="Save Changes" onPress={handleUpdate} />
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   )
 }
 

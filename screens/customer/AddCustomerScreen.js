@@ -41,7 +41,6 @@ export default function AddCustomerScreen({ navigation }) {
 
   const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1)
 
-  // Рендер ошибок по ключу
   const renderErrors = key =>
     Array.isArray(fieldErrors[key])
       ? fieldErrors[key].map(msg => (
