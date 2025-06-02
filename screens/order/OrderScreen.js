@@ -11,20 +11,25 @@ import Toast from 'react-native-toast-message'
 export default function OrderScreen({ navigation }) {
   const inputRef = useRef(null)
   const flatListRef = useRef(null)
+
   const [loading, setLoading] = useState(false)
   const [orders, setOrders] = useState([])
   const [error, setError] = useState(null)
-  const [filter, setFilter] = useState('Active')
+  const [filter, setFilter] = useState('')
   const { isAdmin, isWorker } = useContext(AuthContext)
+
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('date')
   const [isDescending, setIsDescending] = useState(false)
+
   const [selectedOrders, setSelectedOrders] = useState([])
   const selectionMode = selectedOrders.length > 0
 
-  const filters = isWorker
-    ? ['MyOrders', 'Pending', 'InProgress', 'Completed', 'Canceled', 'All']
-    : ['All', 'Completed', 'Canceled', 'InProgress', 'Pending']
+  // Для рабочего: добавляем "MyOrders" + статусы
+  // Для админа: только 4 статуса (MyOrders не нужен)
+  const filters = isAdmin
+    ? ['Pending', 'InProgress', 'Completed', 'Canceled']
+    : ['MyOrders', 'Pending', 'InProgress', 'Completed', 'Canceled']
 
   const loadOrders = async () => {
     setLoading(true)
@@ -34,46 +39,37 @@ export default function OrderScreen({ navigation }) {
       let data = []
 
       if (filter === 'MyOrders' && isWorker) {
-        // Fetch all orders assigned to this user
+        // Для "MyOrders" берём все заказы пользователя
         const allMy = await getUserOrderList()
-
-        // Apply client-side search by customer name or number
         const term = search.trim().toLowerCase()
+
         if (term.length > 0) {
           data = allMy.filter(o => {
-            const nameMatch = o.customerFullName.toLowerCase().includes(term)
-            const numberMatch = o.customerNumber.toString().includes(term)
-            return nameMatch || numberMatch
+            return o.customerFullName.toLowerCase().includes(term) || o.customerNumber.toString().includes(term)
           })
         } else {
           data = allMy
         }
 
-        // Sort client-side using sortBy & isDescending
+        // Сортировка на клиенте
         data.sort((a, b) => {
           let cmp = 0
-
-          if (sortBy === 'date') {
-            // Assume createdOn is ISO string
-            cmp = new Date(a.createdOn) - new Date(b.createdOn)
-          } else if (sortBy === 'name') {
-            cmp = a.customerFullName.localeCompare(b.customerFullName)
-          } else if (sortBy === 'number') {
-            cmp = a.customerNumber - b.customerNumber
-          }
+          if (sortBy === 'date') cmp = new Date(a.createdOn) - new Date(b.createdOn)
+          else if (sortBy === 'name') cmp = a.customerFullName.localeCompare(b.customerFullName)
+          else if (sortBy === 'number') cmp = a.customerNumber - b.customerNumber
 
           return isDescending ? -cmp : cmp
         })
       } else {
-        // For other filters, let the server handle search & sort
+        // Для любых других фильтров (включая статусы) запрашиваем с сервера
         data = await getOrders({
           search: search.trim(),
-          isDescending: isDescending,
-          sortBy: sortBy,
+          isDescending,
+          sortBy,
         })
       }
 
-      // Apply status-based filtering
+      // Применяем фильтрацию по статусу
       let filtered = []
       switch (filter) {
         case 'Pending':
@@ -88,11 +84,9 @@ export default function OrderScreen({ navigation }) {
         case 'Canceled':
           filtered = data.filter(order => order.status === 'Canceled')
           break
-        case 'All':
-          filtered = data
-          break
         default:
-          // For "MyOrders", we already applied search & sort above
+          // Если filter пустой или "MyOrders" (для админа "MyOrders" недоступен),
+          // просто оставляем весь массив
           filtered = data
           break
       }
@@ -131,11 +125,7 @@ export default function OrderScreen({ navigation }) {
     try {
       await takeOrder(id)
       await loadOrders()
-      Toast.show({
-        type: 'success',
-        text1: 'Taken',
-        text2: `Order #${id} taken.`,
-      })
+      Toast.show({ type: 'success', text1: 'Taken', text2: `Order #${id} taken.` })
     } catch (err) {
       console.error(err)
       Toast.show({
@@ -216,7 +206,7 @@ export default function OrderScreen({ navigation }) {
     ])
   }
 
-  // Header "Reload" button
+  // Кнопка "Reload" в шапке
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -227,7 +217,7 @@ export default function OrderScreen({ navigation }) {
     })
   }, [navigation, loadOrders])
 
-  // Reload whenever filter, search, sortBy, or isDescending changes
+  // Перезагружаем список при изменении filter/search/sortBy/isDescending
   useEffect(() => {
     loadOrders()
   }, [filter, search, sortBy, isDescending])
@@ -274,47 +264,86 @@ export default function OrderScreen({ navigation }) {
         />
       </View>
 
-      {/* Filters */}
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: 5,
-          marginBottom: 10,
-        }}
-      >
-        {filters.map(f => (
-          <TouchableOpacity
-            key={f}
-            onPress={() => setFilter(f)}
-            style={{
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              borderRadius: 6,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
-              margin: 4,
-            }}
-          >
-            <Text style={{ color: filter === f ? 'white' : 'black' }}>
-              {
+      {/* Фильтры */}
+      {isAdmin ? (
+        // --- Для администратора: все 4 кнопки в одну строку ---
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 10,
+          }}
+        >
+          {filters.map(f => (
+            <TouchableOpacity
+              key={f}
+              onPress={() => setFilter(prev => (prev === f ? '' : f))}
+              style={{
+                flex: 1,
+                borderRadius: 6,
+                marginTop: 5,
+                paddingVertical: 8,
+                marginHorizontal: 3,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
+              }}
+            >
+              <Text style={{ color: filter === f ? 'white' : 'black' }}>
                 {
-                  MyOrders: 'My Orders',
-                  Pending: 'Pending',
-                  InProgress: 'In Progress',
-                  Completed: 'Completed',
-                  Canceled: 'Canceled',
-                  All: 'All',
-                }[f]
-              }
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+                  {
+                    Pending: 'Pending',
+                    InProgress: 'In Progress',
+                    Completed: 'Completed',
+                    Canceled: 'Canceled',
+                  }[f]
+                }
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      ) : (
+        // --- Для обычного пользователя/рабочего: обёртка с flexWrap ---
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: 5,
+            marginBottom: 10,
+          }}
+        >
+          {filters.map(f => (
+            <TouchableOpacity
+              key={f}
+              onPress={() => setFilter(prev => (prev === f ? '' : f))}
+              style={{
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderRadius: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
+                margin: 4,
+              }}
+            >
+              <Text style={{ color: filter === f ? 'white' : 'black' }}>
+                {
+                  {
+                    MyOrders: 'My Orders',
+                    Pending: 'Pending',
+                    InProgress: 'In Progress',
+                    Completed: 'Completed',
+                    Canceled: 'Canceled',
+                  }[f]
+                }
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
 
-      {/* Bulk delete (Admin only) */}
+      {/* Bulk delete buttons (Admin only) */}
       {isAdmin && selectionMode && (
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
           <TouchableOpacity style={styles.buttonSelectionCancel} onPress={() => setSelectedOrders([])}>
