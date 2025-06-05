@@ -1,15 +1,14 @@
-import { View, Text, Button, Alert, ScrollView} from 'react-native'
-import { getOrderById, deleteOrder, takeOrder, releaseOrder, completeOrder, cancelOrder } from '../../api'
+import { View, Text, ScrollView} from 'react-native'
+import { getOrderById } from '../../api'
 import { styles } from '../../theme/styles'
-import { formatDate } from '../../utils/dateUtils'
-import { useContext, useState, useCallback } from 'react'
-import { AuthContext } from '../../context/authContext'
+import { useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
+import { formatDate } from '../../utils/dateUtils'
+import OrderActions from './OrderActions'
 import Toast from 'react-native-toast-message'
 
 export default function OrderDetailScreen({ route, navigation }) {
   const { order: initialOrder } = route.params
-  const { isAdmin, isWorker } = useContext(AuthContext)
   const [order, setOrder] = useState(initialOrder)
   const [loading, setLoading] = useState(false)
   const formattedDate = formatDate(order.createdOn)
@@ -32,80 +31,7 @@ export default function OrderDetailScreen({ route, navigation }) {
       fetchOrder()
     }, [initialOrder.id])
   )
-
-  const handleDelete = () => {
-    Alert.alert('Confirm Delete', `Delete Order №${order.id}?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteOrder(order.id)
-            Toast.show({
-              type: 'success',
-              text1: `Order №${order.id} deleted`
-            })
-            navigation.goBack()
-          } catch (e) {
-            console.error(e)
-            Toast.show({
-              type: 'error',
-              text1: 'Deletion failed',
-              text2: e.response?.data || e.message
-            })
-          }
-        }
-      }
-    ])
-  }
-
-  // Worker actions 
-  const handleTakeOrder = async () => {
-    try {
-      await takeOrder(order.id)
-      await fetchOrder()
-      Toast.show({ type: 'success', text1: `Order №${order.id} taken` })
-    } catch (e) {
-      console.error(e)
-      Toast.show({ type: 'error', text1: 'Take failed' })
-    }
-  }
-
-  const handleReleaseOrder = async () => {
-    try {
-      await releaseOrder(order.id)
-      await fetchOrder()
-      Toast.show({ type: 'info', text1: `Order №${order.id} released` })
-    } catch (e) {
-      console.error(e)
-      Toast.show({ type: 'error', text1: 'Release failed' })
-    }
-  }
-
-  const handleCompleteOrder = async () => {
-    try {
-      await completeOrder(order.id)
-      await fetchOrder()
-      Toast.show({ type: 'success', text1: `Order №${order.id} completed` })
-    } catch (e) {
-      console.error(e)
-      Toast.show({ type: 'error', text1: 'Complete failed' })
-    }
-  }
-
-  const handleCancelOrder = async () => {
-    try {
-      await cancelOrder(order.id)
-      await fetchOrder()
-      Toast.show({ type: 'info', text1: `Order №${order.id} cancelled` })
-    } catch (e) {
-      console.error(e)
-      Toast.show({ type: 'error', text1: 'Cancel failed', text2: e.response?.data || e.message })
-    }
-  }
   
-
   return (
     <View style={styles.detailContainer}>
       <View style={styles.detailContent}>
@@ -137,29 +63,18 @@ export default function OrderDetailScreen({ route, navigation }) {
           </View>
         )}
       </View>
-
-      {isWorker && (
-        <View style={[styles.buttonOrderDetails, { marginBottom: 16 }]}>
-          {order.isTaken ? (
-            <>
-              <Button title="Release" color="№d63031" onPress={handleReleaseOrder} />
-              <Button title="Complete" color="№0984e3" onPress={handleCompleteOrder} />
-              <Button title="Cancel" color="№6c5ce7" onPress={handleCancelOrder} />
-            </>
-          ) : (
-            <Button title="Take" color="№00b894" onPress={handleTakeOrder} />
-          )}
-        </View>
-      )}
-
-      <View style={[styles.buttonOrderDetails, { flexDirection: 'row', gap: 10 }]}>
-        {isAdmin && (
-          <>
-            <Button title="Delete Order" color="red" onPress={handleDelete} />
-            <Button title="Edit Order" onPress={() => navigation.navigate('EditOrder', { order })} />
-          </>
-        )}
+      
+      <View style={{ flex: 1 }}>  
+      
       </View>
+
+      <OrderActions
+        order={order}
+        onRefresh={fetchOrder}
+        onEdit={() => navigation.navigate('EditOrder', { order })}
+        onDeleted={() => navigation.goBack()}
+        //compact={false}
+      />
     </View>
   )
 }

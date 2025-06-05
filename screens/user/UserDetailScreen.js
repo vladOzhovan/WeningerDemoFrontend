@@ -57,18 +57,22 @@ export default function DetailUserScreen({ route, navigation }) {
   
 
   return (
-    <View style={styles.container}>
-      <Text>User ID: {detailUser.id}</Text>
-      <Text>Username: {detailUser.userName}</Text>
-      <Text>Email: {detailUser.email}</Text>
+    <View style={styles.userContainer}>
+      <Text style={styles.detailText}>Username: {detailUser.userName}</Text>
+      <Text style={styles.detailText}>Email: {detailUser.email}</Text>
 
-      {isAdmin && (
-        <View style={{ marginTop: 20 }}>
-          <Button title="Edit" onPress={handleEdit} />
-          <View style={{ height: 10 }} />
-          <Button title="Delete" color="red" onPress={handleDelete} />
-        </View>
-      )}
+      <View style={styles.buttonUserDetails}>
+        {isAdmin && (
+          <>
+            <View style={{ flex: 1 }}>
+              <Button title="Delete" color="red" onPress={handleDelete} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button title="Edit" onPress={() => navigation.navigate('EditUser', { user: detailUser })} />
+            </View>
+          </>
+        )}
+      </View>
     </View>
   )
 }

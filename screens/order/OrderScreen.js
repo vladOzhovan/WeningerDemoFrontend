@@ -1,10 +1,12 @@
-import { useState, useLayoutEffect, useEffect, useRef, useContext } from 'react'
+import { useState, useLayoutEffect, useEffect, useCallback, useRef, useContext } from 'react'
+import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { getOrders, getUserOrderList, deleteMultipleOrders } from '../../api'
+import { useFocusEffect } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
 import { styles } from '../../theme/styles'
-import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
-import { getOrders, getUserOrderList, takeOrder, releaseOrder, completeOrder, deleteMultipleOrders } from '../../api'
 import { AuthContext } from '../../context/authContext'
 import { formatDate } from '../../utils/dateUtils'
+import OrderActions from './OrderActions'
 import SortMenu from '../../SortMenu'
 import Toast from 'react-native-toast-message'
 
@@ -25,8 +27,6 @@ export default function OrderScreen({ navigation }) {
   const [selectedOrders, setSelectedOrders] = useState([])
   const selectionMode = selectedOrders.length > 0
 
-  // Для рабочего: добавляем "MyOrders" + статусы
-  // Для админа: только 4 статуса (MyOrders не нужен)
   const filters = isAdmin
     ? ['Pending', 'InProgress', 'Completed', 'Canceled']
     : ['MyOrders', 'Pending', 'InProgress', 'Completed', 'Canceled']
@@ -39,7 +39,6 @@ export default function OrderScreen({ navigation }) {
       let data = []
 
       if (filter === 'MyOrders' && isWorker) {
-        // Для "MyOrders" берём все заказы пользователя
         const allMy = await getUserOrderList()
         const term = search.trim().toLowerCase()
 
@@ -51,7 +50,6 @@ export default function OrderScreen({ navigation }) {
           data = allMy
         }
 
-        // Сортировка на клиенте
         data.sort((a, b) => {
           let cmp = 0
           if (sortBy === 'date') cmp = new Date(a.createdOn) - new Date(b.createdOn)
@@ -61,7 +59,6 @@ export default function OrderScreen({ navigation }) {
           return isDescending ? -cmp : cmp
         })
       } else {
-        // Для любых других фильтров (включая статусы) запрашиваем с сервера
         data = await getOrders({
           search: search.trim(),
           isDescending,
@@ -69,7 +66,6 @@ export default function OrderScreen({ navigation }) {
         })
       }
 
-      // Применяем фильтрацию по статусу
       let filtered = []
       switch (filter) {
         case 'Pending':
@@ -85,8 +81,6 @@ export default function OrderScreen({ navigation }) {
           filtered = data.filter(order => order.status === 'Canceled')
           break
         default:
-          // Если filter пустой или "MyOrders" (для админа "MyOrders" недоступен),
-          // просто оставляем весь массив
           filtered = data
           break
       }
@@ -118,59 +112,6 @@ export default function OrderScreen({ navigation }) {
       setSelectedOrders([order.id])
     } else {
       toggleSelect(order.id)
-    }
-  }
-
-  const handleTakeOrder = async id => {
-    try {
-      await takeOrder(id)
-      await loadOrders()
-      Toast.show({ type: 'success', text1: 'Taken', text2: `Order #${id} taken.` })
-    } catch (err) {
-      console.error(err)
-      Toast.show({
-        type: 'error',
-        text1: 'Take failed',
-        text2: `Failed to take order #${id}.`,
-      })
-    }
-  }
-
-  const handleReleaseOrder = async id => {
-    try {
-      await releaseOrder(id)
-      await loadOrders()
-      Toast.show({
-        type: 'info',
-        text1: 'Released',
-        text2: `Order #${id} released.`,
-      })
-    } catch (err) {
-      console.error(err)
-      Toast.show({
-        type: 'error',
-        text1: 'Release failed',
-        text2: `Failed to release order #${id}.`,
-      })
-    }
-  }
-
-  const handleCompleteOrder = async id => {
-    try {
-      await completeOrder(id)
-      await loadOrders()
-      Toast.show({
-        type: 'success',
-        text1: 'Completed',
-        text2: `Order #${id} completed.`,
-      })
-    } catch (err) {
-      console.error(err)
-      Toast.show({
-        type: 'error',
-        text1: 'Complete failed',
-        text2: `Failed to complete order #${id}.`,
-      })
     }
   }
 
@@ -206,7 +147,6 @@ export default function OrderScreen({ navigation }) {
     ])
   }
 
-  // Кнопка "Reload" в шапке
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -217,10 +157,15 @@ export default function OrderScreen({ navigation }) {
     })
   }, [navigation, loadOrders])
 
-  // Перезагружаем список при изменении filter/search/sortBy/isDescending
   useEffect(() => {
     loadOrders()
   }, [filter, search, sortBy, isDescending])
+
+  useFocusEffect(
+    useCallback(() => {
+      loadOrders()
+    }, [filter, search, sortBy, isDescending])
+  )
 
   return (
     <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 1 }]}>
@@ -264,9 +209,8 @@ export default function OrderScreen({ navigation }) {
         />
       </View>
 
-      {/* Фильтры */}
+      {/* Filters */}
       {isAdmin ? (
-        // --- Для администратора: все 4 кнопки в одну строку ---
         <View
           style={{
             flexDirection: 'row',
@@ -303,7 +247,6 @@ export default function OrderScreen({ navigation }) {
           ))}
         </View>
       ) : (
-        // --- Для обычного пользователя/рабочего: обёртка с flexWrap ---
         <View
           style={{
             flexDirection: 'row',
@@ -387,26 +330,18 @@ export default function OrderScreen({ navigation }) {
               onPress={() => handlePress(item)}
               onLongPress={() => handleLongPress(item)}
             >
+              <Text>№{item.id}</Text>
               <Text>Name: {item.customerFullName}</Text>
               <Text>Customer №: {item.customerNumber}</Text>
               <Text>Date: {formatDate(item.createdOn)}</Text>
-              <View style={{ flexDirection: 'row', marginTop: 6 }}>
-                {isWorker &&
-                  (item.isTaken ? (
-                    <>
-                      <TouchableOpacity onPress={() => handleReleaseOrder(item.id)}>
-                        <Text style={{ color: 'red' }}>Release</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => handleCompleteOrder(item.id)} style={{ marginLeft: 15 }}>
-                        <Text style={{ color: 'blue' }}>Complete</Text>
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <TouchableOpacity onPress={() => handleTakeOrder(item.id)}>
-                      <Text style={{ color: 'green' }}>Take</Text>
-                    </TouchableOpacity>
-                  ))}
-              </View>
+
+              <OrderActions
+                order={item}
+                onRefresh={loadOrders}
+                onEdit={(order) => navigation.navigate('EditOrder', { order })}
+                compact={true} 
+              />
+
             </TouchableOpacity>
           )}
         />

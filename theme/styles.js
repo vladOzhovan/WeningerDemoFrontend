@@ -4,8 +4,8 @@ import { colors } from '../theme/colors'
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fcfbf9',
     paddingHorizontal: 20,
+    backgroundColor: '#fcfbf9',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -162,19 +162,39 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  buttonOrderDetails: {
+  buttonOrderDetailsAdmin: {
+    gap: 25,
+    marginBottom: 70,
+    marginHorizontal: 25,
+    flexDirection: 'row',
     alignItems: 'center',
     alignContent: 'center',
     alignSelf: 'center',
-    marginTop: 10,
-    marginBottom: 70,
+  },
+
+  buttonOrderDetailsUser: {
+    gap: 5,
+    width: '100%',
+    marginHorizontal: 10,
+    flexDirection: 'row',
+    alignSelf: 'center',
+  },
+
+  buttonOrderOptions: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+
+  buttonOrderOptionsTake: {
+    width: '50%',
+    marginHorizontal: 4,
   },
 
   detailContainer: {
     flex: 1,
-    backgroundColor: 'white',
     paddingHorizontal: 20,
     paddingTop: 20,
+    backgroundColor: 'white',
   },
 
   detailContent: {
@@ -187,8 +207,8 @@ export const styles = StyleSheet.create({
 
   detailTitle: {
     fontSize: 24,
-    textAlign: 'center',
     marginBottom: 15,
+    textAlign: 'center',
     fontWeight: '700',
   },
 
@@ -234,7 +254,33 @@ export const styles = StyleSheet.create({
     textAlign: 'justify',
   },
 
+  userContainer: {
+    flex: 1,
+    padding: 25,
+    paddingBlock: 250,
+    backgroundColor: '#fcfbf9',
+  },
 
+  buttonUserDetails: {
+    gap: 25,
+    marginTop: 200,
+    marginBottom: 50,
+    marginHorizontal: 25,
+    flexDirection: 'row',
+  },
+
+  loginContainer: {
+    flex: 1,
+    paddingTop: 250,
+    backgroundColor: '#fcfbf9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  loginButton: {
+    width: '50%',
+    paddingTop: 25,
+  },
 })
 
 export default styles
