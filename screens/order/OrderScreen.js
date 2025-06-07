@@ -168,7 +168,7 @@ export default function OrderScreen({ navigation }) {
   )
 
   return (
-    <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 1 }]}>
+    <View style={styles.orderScreenContainer}>
       {/* Search + Sort */}
       <View style={{ flexDirection: 'row', gap: 10, paddingVertical: 5 }}>
         <View style={{ flex: 1, position: 'relative' }}>
@@ -341,7 +341,6 @@ export default function OrderScreen({ navigation }) {
                 onEdit={(order) => navigation.navigate('EditOrder', { order })}
                 compact={true} 
               />
-
             </TouchableOpacity>
           )}
         />

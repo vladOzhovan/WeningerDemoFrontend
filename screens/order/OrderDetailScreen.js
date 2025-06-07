@@ -34,9 +34,8 @@ export default function OrderDetailScreen({ route, navigation }) {
   
   return (
     <View style={styles.detailContainer}>
-      <View style={styles.detailContent}>
+      <View>
         <Text style={styles.detailTitle}>Order №{order.id}</Text>
-
         {formattedDate && <Text style={styles.detailText}>Date: {formattedDate}</Text>}
         <View style={styles.detailText}>
           <Text style={[styles.detailText, { marginBottom: 4 }]}>Status: {order.status}</Text>
@@ -63,18 +62,16 @@ export default function OrderDetailScreen({ route, navigation }) {
           </View>
         )}
       </View>
-      
-      <View style={{ flex: 1 }}>  
-      
-      </View>
 
-      <OrderActions
-        order={order}
-        onRefresh={fetchOrder}
-        onEdit={() => navigation.navigate('EditOrder', { order })}
-        onDeleted={() => navigation.goBack()}
-        //compact={false}
-      />
+      <View style={styles.orderDetailOptionButton}>
+        <OrderActions
+          order={order}
+          onRefresh={fetchOrder}
+          onEdit={() => navigation.navigate('EditOrder', { order })}
+          onDeleted={() => navigation.goBack()}
+          compact={false}
+        />
+      </View>
     </View>
   )
 }

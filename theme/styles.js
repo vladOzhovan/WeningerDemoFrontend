@@ -5,8 +5,26 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fcfbf9',
+  },
+
+  loginContainer: {
+    flex: 1,
+    paddingTop: 250,
     backgroundColor: '#fcfbf9',
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  orderScreenContainer: {
+    flex: 1,
+    paddingBlock: 10,
+    paddingBottom: 50,
+    paddingHorizontal: 20,
+    justifyContent: 'flex-start',
+    backgroundColor: '#fcfbf9',
     alignItems: 'center',
   },
 
@@ -192,8 +210,9 @@ export const styles = StyleSheet.create({
 
   detailContainer: {
     flex: 1,
-    paddingHorizontal: 20,
     paddingTop: 20,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
     backgroundColor: 'white',
   },
 
@@ -269,18 +288,24 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 
-  loginContainer: {
-    flex: 1,
-    paddingTop: 250,
-    backgroundColor: '#fcfbf9',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
   loginButton: {
     width: '50%',
     paddingTop: 25,
   },
+
+  orderDetailOptionButton: {
+    position: 'absolute',
+    bottom: 70,
+    left: 20,
+    right: 20,
+  },
+
+  orderDetailOptionButton2: {
+    marginBlock: 20,
+    marginBottom: 50
+  },
+
+
 })
 
 export default styles
