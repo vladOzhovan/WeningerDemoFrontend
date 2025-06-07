@@ -290,7 +290,7 @@ export default function CustomerScreen({ navigation }) {
               onPress={() => handlePress(item)}
               onLongPress={() => handleLongPress(item)}
             >
-              <Text style={styles.text}>
+              <Text style={{ fontSize: 16, color: '#3b3e24', }}>
                 {item.customerNumber}: {item.firstName} {item.secondName}{' '}
                 <Text style={{ fontSize: 14, color: '#97b349' }}>({item.overallStatus})</Text>
               </Text>

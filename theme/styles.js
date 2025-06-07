@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native'
-import { colors } from '../theme/colors'
 
 export const styles = StyleSheet.create({
   container: {
@@ -8,14 +7,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fcfbf9',
-  },
-
-  loginContainer: {
-    flex: 1,
-    paddingTop: 250,
-    backgroundColor: '#fcfbf9',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 
   orderScreenContainer: {
@@ -34,11 +25,6 @@ export const styles = StyleSheet.create({
     color: '#282c0d',
     textAlign: 'center',
     marginBottom: 20,
-  },
-
-  text: {
-    fontSize: 16,
-    color: '#3b3e24',
   },
 
   customerList: {
@@ -139,15 +125,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  deleteButton: {
-    backgroundColor: 'red',
-    width: '50%',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-
   addUserButton: {
     width: '60%',
     height: 50,
@@ -157,13 +134,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 25,
     marginVertical: 10,
-  },
-
-  footerButton: {
-    alignItems: 'center',
-    alignContent: 'center',
-    marginTop: 30,
-    marginBottom: 30,
   },
 
   customerFooterButton: {
@@ -180,16 +150,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  buttonOrderDetailsAdmin: {
-    gap: 25,
-    marginBottom: 70,
-    marginHorizontal: 25,
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignContent: 'center',
-    alignSelf: 'center',
-  },
-
   buttonOrderDetailsUser: {
     gap: 5,
     width: '100%',
@@ -203,25 +163,12 @@ export const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
 
-  buttonOrderOptionsTake: {
-    width: '50%',
-    marginHorizontal: 4,
-  },
-
   detailContainer: {
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
     justifyContent: 'space-between',
     backgroundColor: 'white',
-  },
-
-  detailContent: {
-    flex: 1,
-    paddingTop: 100,
-    width: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
   },
 
   detailTitle: {
@@ -300,12 +247,62 @@ export const styles = StyleSheet.create({
     right: 20,
   },
 
-  orderDetailOptionButton2: {
-    marginBlock: 20,
-    marginBottom: 50
-  },
+  // orderDetailOptionButton2: {
+  //   marginBlock: 20,
+  //   marginBottom: 50
+  // },
 
+  // loginContainer: {
+  //   flex: 1,
+  //   paddingTop: 250,
+  //   backgroundColor: '#fcfbf9',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
 
+  // text: {
+  //   fontSize: 16,
+  //   color: '#3b3e24',
+  // },
+
+  // deleteButton: {
+  //   backgroundColor: 'red',
+  //   width: '50%',
+  //   paddingVertical: 12,
+  //   paddingHorizontal: 12,
+  //   borderRadius: 8,
+  //   alignItems: 'center',
+  // },
+
+  // footerButton: {
+  //   alignItems: 'center',
+  //   alignContent: 'center',
+  //   marginTop: 30,
+  //   marginBottom: 30,
+  // },
+
+  // buttonOrderDetailsAdmin: {
+  //   gap: 25,
+  //   marginBottom: 70,
+  //   marginHorizontal: 25,
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   alignContent: 'center',
+  //   alignSelf: 'center',
+  // },
+
+  // buttonOrderOptionsTake: {
+  //   width: '50%',
+  //   marginHorizontal: 4,
+  // },
+
+  // detailContent: {
+  //   flex: 1,
+  //   paddingTop: 100,
+  //   width: '100%',
+  //   justifyContent: 'flex-start',
+  //   alignItems: 'center',
+  // },
 })
 
 export default styles
