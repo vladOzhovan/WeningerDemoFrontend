@@ -338,8 +338,9 @@ export default function OrderScreen({ navigation }) {
               <OrderActions
                 order={item}
                 onRefresh={loadOrders}
-                onEdit={(order) => navigation.navigate('EditOrder', { order })}
-                compact={true} 
+                onEdit={order => navigation.navigate('EditOrder', { order })}
+                compact={true}
+                disableAdminActions={true}
               />
             </TouchableOpacity>
           )}
