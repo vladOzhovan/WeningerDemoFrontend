@@ -89,7 +89,7 @@ export default function AddCustomerScreen({ navigation }) {
       if (address.zipCode.trim()) {
         addr.zipCode = parseInt(address.zipCode, 10) || 0
       }
-      ;['country', 'city', 'street', 'houseNumber', 'apartment'].forEach(fld => {
+      ['country', 'city', 'street', 'houseNumber', 'apartment'].forEach(fld => {
         if (address[fld].trim()) {
           addr[fld] = address[fld].trim()
         }
@@ -98,9 +98,9 @@ export default function AddCustomerScreen({ navigation }) {
     }
 
     try {
-      await createCustomer(payload)
+      const newCustomer = await createCustomer(payload)
       Toast.show({ type: 'success', text1: 'Customer added' })
-      navigation.goBack()
+      navigation.replace('CustomerDetail', { customer: newCustomer })
     } catch (e) {
       const srvErrs = e.response?.data?.errors
       if (srvErrs) {

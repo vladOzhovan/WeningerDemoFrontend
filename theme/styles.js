@@ -1,5 +1,13 @@
 import { StyleSheet } from 'react-native'
 
+export const statusColors = {
+  Pending: '#918c5c',
+  InProgress: '#65a60f',
+  Completed: '#3498db',
+  Canceled: '#a21e1e',
+  NoOrders: 'darkviolet'
+}
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -9,12 +17,21 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fcfbf9',
   },
 
+  customerContainer: {
+    flex: 1,
+    paddingTop: 20,
+    paddingHorizontal: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fcfbf9',
+  },
+
   orderScreenContainer: {
     flex: 1,
     paddingBlock: 10,
     paddingBottom: 50,
-    paddingHorizontal: 20,
-    justifyContent: 'flex-start',
+    paddingHorizontal: 15,
+    justifyContent: 'center',
     backgroundColor: '#fcfbf9',
     alignItems: 'center',
   },
@@ -91,7 +108,7 @@ export const styles = StyleSheet.create({
   homeButton: {
     width: '70%',
     height: 50,
-    backgroundColor: colors.buttonNavi,
+    backgroundColor: '#b99a99',
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
@@ -101,7 +118,7 @@ export const styles = StyleSheet.create({
   buttonSelectionCancel: {
     flex: 1,
     marginHorizontal: 5,
-    backgroundColor: '#827f89',
+    backgroundColor: '#177dde',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -110,7 +127,7 @@ export const styles = StyleSheet.create({
   buttonSelectionSelectAll: {
     flex: 1,
     marginHorizontal: 5,
-    backgroundColor: '#176bc6',
+    backgroundColor: '#827f89',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -123,6 +140,15 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+  },
+
+  addCustomerButton: {
+    flex: 1,
+    margin: 5,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    backgroundColor: '#d1ac9e',
   },
 
   addUserButton: {
@@ -246,8 +272,11 @@ export const styles = StyleSheet.create({
     left: 20,
     right: 20,
   },
+})
 
-  // orderDetailOptionButton2: {
+export default styles
+
+// orderDetailOptionButton2: {
   //   marginBlock: 20,
   //   marginBottom: 50
   // },
@@ -303,6 +332,3 @@ export const styles = StyleSheet.create({
   //   justifyContent: 'flex-start',
   //   alignItems: 'center',
   // },
-})
-
-export default styles

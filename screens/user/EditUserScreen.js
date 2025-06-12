@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, Text, TextInput, Button, Alert } from 'react-native'
 import { styles } from '../../theme/styles'
-import { updatrUser } from '../../api'
+import { updatrUser as updateUser } from '../../api'
 
 export default function EditUserScreen({ route, navigation }) {
   const { user } = route.params
@@ -11,7 +11,7 @@ export default function EditUserScreen({ route, navigation }) {
 
   const handleUpdate = async () => {
     try {
-      await updatrUser(user.id, { userName, email })
+      await updateUser(user.id, { userName, email })
       Alert.alert('Success', 'User updated successfully.')
       navigation.goBack()
     } catch (err) {

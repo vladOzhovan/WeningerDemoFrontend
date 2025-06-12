@@ -13,9 +13,9 @@ export default function DetailUserScreen({ route, navigation }) {
 
   const handleDelete = async () => {
     Alert.alert('Confirm Deletion', `Are you sure you want to delete user "${detailUser.userName}"?`, [
-      { text: 'Cancel', style: 'cancel' },
+      { text: 'No', style: 'cancel' },
       {
-        text: 'Delete',
+        text: 'Yes',
         style: 'destructive',
         onPress: async () => {
           try {

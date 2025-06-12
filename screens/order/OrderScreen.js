@@ -1,9 +1,9 @@
 import { useState, useLayoutEffect, useEffect, useCallback, useRef, useContext } from 'react'
-import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from 'react-native'
 import { getOrders, getUserOrderList, deleteMultipleOrders } from '../../api'
 import { useFocusEffect } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
-import { styles } from '../../theme/styles'
+import { styles, statusColors } from '../../theme/styles'
 import { AuthContext } from '../../context/authContext'
 import { formatDate } from '../../utils/dateUtils'
 import OrderActions from './OrderActions'
@@ -28,8 +28,8 @@ export default function OrderScreen({ navigation }) {
   const selectionMode = selectedOrders.length > 0
 
   const filters = isAdmin
-    ? ['Pending', 'InProgress', 'Completed', 'Canceled']
-    : ['MyOrders', 'Pending', 'InProgress', 'Completed', 'Canceled']
+    ? ['Canceled', 'Completed', 'InProgress', 'Pending']
+    : ['Canceled', 'Completed', 'InProgress', 'Pending', 'MyOrders']
 
   const loadOrders = async () => {
     setLoading(true)
@@ -119,9 +119,9 @@ export default function OrderScreen({ navigation }) {
     if (selectedOrders.length === 0) return
 
     Alert.alert('Confirm Deletion', `Are you sure you want to delete ${selectedOrders.length} selected orders?`, [
-      { text: 'Cancel', style: 'cancel' },
+      { text: 'No', style: 'cancel' },
       {
-        text: 'Delete',
+        text: 'Yes',
         style: 'destructive',
         onPress: async () => {
           try {
@@ -210,81 +210,40 @@ export default function OrderScreen({ navigation }) {
       </View>
 
       {/* Filters */}
-      {isAdmin ? (
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 10,
-          }}
-        >
-          {filters.map(f => (
-            <TouchableOpacity
-              key={f}
-              onPress={() => setFilter(prev => (prev === f ? '' : f))}
-              style={{
-                flex: 1,
-                borderRadius: 6,
-                marginTop: 5,
-                paddingVertical: 8,
-                marginHorizontal: 3,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
-              }}
-            >
-              <Text style={{ color: filter === f ? 'white' : 'black' }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ maxHeight: 50}}
+        contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5}}
+      >
+        {filters.map(f => (
+          <TouchableOpacity
+            key={f}
+            onPress={() => setFilter(prev => (prev === f ? '' : f))}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: 6,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 8,
+              backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
+            }}
+          >
+            <Text style={{ color: filter === f ? 'white' : 'black' }}>
+              {
                 {
-                  {
-                    Pending: 'Pending',
-                    InProgress: 'In Progress',
-                    Completed: 'Completed',
-                    Canceled: 'Canceled',
-                  }[f]
-                }
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      ) : (
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: 5,
-            marginBottom: 10,
-          }}
-        >
-          {filters.map(f => (
-            <TouchableOpacity
-              key={f}
-              onPress={() => setFilter(prev => (prev === f ? '' : f))}
-              style={{
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                borderRadius: 6,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: filter === f ? '#0984e3' : '#dfe6e9',
-                margin: 4,
-              }}
-            >
-              <Text style={{ color: filter === f ? 'white' : 'black' }}>
-                {
-                  {
-                    MyOrders: 'My Orders',
-                    Pending: 'Pending',
-                    InProgress: 'In Progress',
-                    Completed: 'Completed',
-                    Canceled: 'Canceled',
-                  }[f]
-                }
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+                  MyOrders: 'My Orders',
+                  Pending: 'Pending',
+                  InProgress: 'In Progress',
+                  Completed: 'Completed',
+                  Canceled: 'Canceled',
+                }[f]
+              }
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
 
       {/* Bulk delete buttons (Admin only) */}
       {isAdmin && selectionMode && (
@@ -311,7 +270,7 @@ export default function OrderScreen({ navigation }) {
       {error && <Text style={{ color: 'red', margin: 10 }}>{error}</Text>}
 
       {/* Order list */}
-      <View style={{ flex: 1, width: '95%' }}>
+      <View style={{ flex: 1, width: '100%' }}>
         <FlatList
           ref={flatListRef}
           data={orders}
@@ -334,6 +293,10 @@ export default function OrderScreen({ navigation }) {
               <Text>Name: {item.customerFullName}</Text>
               <Text>Customer №: {item.customerNumber}</Text>
               <Text>Date: {formatDate(item.createdOn)}</Text>
+              <Text>
+                <Text>Status: </Text>
+                <Text style={{ color: statusColors[item.status] || 'black', fontWeight: 'bold' }}>{item.status}</Text>
+              </Text>
 
               <OrderActions
                 order={item}
