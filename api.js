@@ -161,11 +161,15 @@ export const getOrders = async (query = {}) => {
   }
 }
 
-export const getOrdersByCustomer = async (customerNumber) => {
+export const getOrdersByCustomer = async customerNumber => {
   try {
     const response = await api.get(`/api/order/by-customer/${customerNumber}`)
     return response.data
   } catch (error) {
+    // If a customer has no orders, API returns 404 — we return an empty array
+    if (error.response?.status === 404) {
+      return []
+    }
     console.error(`Error fetching orders for customer ${customerNumber}:`, error)
     throw error
   }
