@@ -19,8 +19,16 @@ export default function CustomerDetailScreen({ route, navigation }) {
     try {
       const updated = await getCustomerById(initialCustomer.id)
       setCustomer(updated)
-      const data = await getOrdersByCustomer(updated.customerNumber)
-      setOrders(data)
+      try {
+        const data = await getOrdersByCustomer(updated.customerNumber)
+        setOrders(data)
+      } catch (err) {
+        if (err.response?.status === 404) {
+          setOrders([])
+        } else {
+          throw err
+        }
+      }
     } catch (e) {
       console.error('Error fetching customer or orders', e)
       Toast.show({ type: 'error', text1: 'Failed to load customer data' })

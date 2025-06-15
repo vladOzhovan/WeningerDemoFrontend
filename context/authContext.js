@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         isAuthenticated,
         isAdmin,
-        isWorker, // ← эта строка должна быть здесь
+        isWorker,
         user,
         login,
         logout
