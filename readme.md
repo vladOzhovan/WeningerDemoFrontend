@@ -58,6 +58,18 @@ The backend is already set up on a remote server (Render.com)
 - Dark mode support
 - Offline mode
 
+### Preview
+
+![Interface](assets/screenshots/Screenshot_2025-06-16-22-14-30-766_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-22-14-58-637_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-22-15-25-934_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-23-32-58-490_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-23-33-35-032_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-23-34-17-274_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-23-34-23-783_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-23-43-00-201_host.exp.exponent.jpg)
+![Interface](assets/screenshots/Screenshot_2025-06-16-23-34-44-332_host.exp.exponent.jpg)
+
 ## 🙌 Author
 
 Made by Vlad Ozhovan, 2025
