@@ -1,4 +1,4 @@
-import { View, Text, ScrollView} from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { getOrderById } from '../../api'
 import { styles } from '../../theme/styles'
 import { useState, useCallback } from 'react'
@@ -36,6 +36,19 @@ export default function OrderDetailScreen({ route, navigation }) {
     <View style={styles.detailContainer}>
       <View>
         <Text style={styles.detailTitle}>Order №{order.id}</Text>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('CustomerStack', {
+              screen: 'CustomerDetail',
+              params: { customer: { id: order.customerId, customerNumber: order.customerNumber } },
+            })
+          }
+          style={{ marginBottom: 10 }}
+        >
+          <Text style={[styles.detailText, { color: '#007bff', textDecorationLine: 'underline' }]}>
+            {order.customerFullName}
+          </Text>
+        </TouchableOpacity>
         {formattedDate && <Text style={styles.detailText}>Date: {formattedDate}</Text>}
         <View style={styles.detailText}>
           <Text style={[styles.detailText, { marginBottom: 4 }]}>Status: {order.status}</Text>
