@@ -41,7 +41,8 @@ I'm not a frontend developer.
    ```bash
    npx expo start --tunnel
    ```
-
+5. Install Expo Go to yor smartphone
+   
 ### Backend
 The backend is already set up on a remote server (Render.com)  
 
@@ -59,7 +60,7 @@ The backend is already set up on a remote server (Render.com)
 
 ## 🙌 Author
 
-Made by Vlad, 2025
+Made by Vlad Ozhovan, 2025
 
 > Learning C# and ASP.NET Core. This demo was built with the help of ChatGPT.
 
