@@ -14,8 +14,8 @@ I'm not a frontend developer.
 - 🛒 Manage **orders** for each customer
 - 🔍 Search, sort, and filter by status
 - ✅ Bulk actions: select multiple orders or customers to delete or update
-- 🔐 User roles: Admin and regular user
-- 📦 Backend hosted on Render.com with PostgreSQL
+- 🔐 User roles: Admin and User
+- 📦 Backend hosted on Render.com with PostgreSQL (https://github.com/vladOzhovan/WeningerDemoBackend.git)
 
 ## 💠 Tech Stack
 
