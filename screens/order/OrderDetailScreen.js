@@ -80,7 +80,12 @@ export default function OrderDetailScreen({ route, navigation }) {
         <OrderActions
           order={order}
           onRefresh={fetchOrder}
-          onEdit={() => navigation.navigate('EditOrder', { order })}
+          onEdit={() =>
+            navigation.navigate('OrderStack', {
+              screen: 'EditOrder',
+              params: { order },
+            })
+          }
           onDeleted={() => navigation.goBack()}
           compact={false}
         />

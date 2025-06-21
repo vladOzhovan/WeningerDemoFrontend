@@ -1,15 +1,5 @@
 import { useState } from 'react'
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  Platform,
-  Keyboard,
-  ScrollView,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-} from 'react-native'
+import { View, Text, TextInput, Button,Platform, Keyboard, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, } from 'react-native'
 import { styles } from '../../theme/styles'
 import { createCustomer } from '../../api'
 import Toast from 'react-native-toast-message'

@@ -173,8 +173,9 @@ export default function CustomerDetailScreen({ route, navigation }) {
           <TouchableOpacity
             style={[styles.button, { flex: 1, backgroundColor: '#929699', marginHorizontal: 4 }]}
             onPress={() =>
-              navigation.navigate('AddOrder', {
-                customerNumber: customer.customerNumber,
+              navigation.navigate('OrderStack', {
+                screen: 'AddOrder',
+                params: { customerNumber: customer.customerNumber },
               })
             }
           >

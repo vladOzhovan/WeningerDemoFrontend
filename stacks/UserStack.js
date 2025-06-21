@@ -4,6 +4,7 @@ import RegisterScreen from "../screens/user/RegisterScreen"
 import UserListScreen from "../screens/user/UserListScreen"
 import UserDetailrScreen from '../screens/user/UserDetailScreen'
 import EditUserScreen from '../screens/user/EditUserScreen'
+import InviteScreen from '../screens/user/InviteScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -41,6 +42,12 @@ export default function UserStack() {
         name="EditUser"
         component={EditUserScreen}
         options={{title: 'Edit User'}}
+      />
+
+      <Stack.Screen
+        name="InviteUser"
+        component={InviteScreen}
+        options={{ title: 'Invite User' }}
       />
     </Stack.Navigator>
   )

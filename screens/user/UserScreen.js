@@ -42,9 +42,9 @@ export default function UserScreen({ navigation }) {
       {isAdmin && (
         <TouchableOpacity
           style={[styles.addUserButton]}
-          onPress={() => navigation.navigate("RegisterUser")}
+          onPress={() => navigation.navigate("InviteUser")}
         >
-          <Text style={styles.buttonText}>Add User</Text>
+          <Text style={styles.buttonText}>Invite</Text>
         </TouchableOpacity>
       )}
 

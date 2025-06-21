@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }) {
 
       <TouchableOpacity
         style={[styles.homeButton]}
-        onPress={() => navigation.navigate("Orders")}
+        onPress={() => navigation.navigate("OrderStack")}
       >
         <Text style={styles.buttonText}>Orders</Text>
       </TouchableOpacity>

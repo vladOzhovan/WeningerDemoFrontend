@@ -27,7 +27,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={{ paddingBottom: 20 }}>
-        <Text style={styles.title}>Weninger Shop</Text>
+        <Text style={styles.title}>Mini CRM</Text>
       </View>
 
       <TextInput
@@ -64,6 +64,15 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.loginButton}>
         <Button title="Login" onPress={onSubmit} />
       </View>
+      
+      <TouchableOpacity
+        style={{ marginTop: 10 }}
+        onPress={() => navigation.navigate('RegisterUser')}
+      >
+        <Text style={{ color: '#007bff', textAlign: 'center' }}>
+          Don't have an account? Register
+        </Text>
+      </TouchableOpacity>
     </View>
   )
 }

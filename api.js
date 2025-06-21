@@ -33,17 +33,31 @@ api.interceptors.response.use(
 
 export default api
 
-export const registerUser = async (userName, email, password) => {
+export const inviteUser = async (email, validDays = 1) => {
+  try {
+    const response = await api.post('/api/account/invite', {
+      Email: email,
+      ValidDays: validDays
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error inviting user', error.response?.data || error.message)
+    throw error
+  }
+}
+
+export const registerUser = async (userName, email, password, invitationToken) => {
   try {
     const response = await api.post('/api/account/register-user', {
       userName,
       email,
-      password
+      password,
+      token: invitationToken
     })
     return response.data
   } catch (error) {
     console.error('Registration error:', error.response?.data || error.message)
-    throw new Error('Registration failed')
+    throw error
   }
 }
 

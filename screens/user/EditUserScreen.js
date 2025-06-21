@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, Text, TextInput, Button, Alert } from 'react-native'
 import { styles } from '../../theme/styles'
-import { updatrUser as updateUser } from '../../api'
+import { updateUser } from '../../api'
 
 export default function EditUserScreen({ route, navigation }) {
   const { user } = route.params
